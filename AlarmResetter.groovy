@@ -11,7 +11,7 @@ preferences {
     section("Alarming") {
         input "alarms", "capability.alarm", title:"Reset these alarms", multiple:true, required:true
         input "interval", "number", title:"Reset in (~minutes, max 2x)", defaultValue:1
-        input "contacts", "capability.contact", title:"Set contacts on (used to trigger mode)", multiple:true, required:false
+        input "contacts", "capability.contactSensor", title:"Set contacts on (used to trigger mode)", multiple:true, required:false
         input("strobe", "bool", title:"Strobe?", description: "Stobe still?", defaultValue: true)
     }
 }
