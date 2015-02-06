@@ -57,7 +57,9 @@ private resetAlarms() {
       }
    
    if(alarm == true) {
-   	  setContacts()
+      setContacts()
+   	  
+      sendNotificationEvent("Alarm disabled, was active (reset contacts)!")
    }
 }
 
