@@ -37,7 +37,7 @@ def pollingTask() {
     }
 }
 
-private clearContacts() {
+def reset() {
     settings.contacts*.closed()
 }
 
