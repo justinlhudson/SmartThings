@@ -30,7 +30,6 @@ def pollingTask() {
         state.flag = 0
 
         resetAlarms()
-        setContacts()
     }
     else if(state.flag == 0) {
       state.flag = 1
@@ -46,14 +45,20 @@ private setContacts() {
 }
 
 private resetAlarms() {
+	def alarm = false
     for (device in settings.alarms) {
-        if(device.currentValue("switch") == "on") {
+        if(device.currentValue("alarm") != "off") {
             device.off()
             if(strobe == true) {
                 device.strobe()
+                alarm = true
             }
         }
       }
+   
+   if(alarm == true) {
+   	  setContacts()
+   }
 }
 
 private def initialize() {
