@@ -11,7 +11,8 @@ preferences {
     section("Alarming") {
         input "alarms", "capability.alarm", title:"Reset alarms", multiple:true, required:true
         input "strobe", "bool", title:"Strobe?", description: "Stobe still?", defaultValue: true
-        input "interval", "number", title:"Reset (seconds)", defaultValue:60
+        input "delay", "number", title:"Active (seconds)", defaultValue:60
+        input "reset", "number", title:"Reset (minutes)", defaultValue:180
         input "persons", "capability.presenceSensor", title:"Set present (e.g. Virtual)", multiple:true, required:false
     }
 }
@@ -30,6 +31,8 @@ def updated() {
 def clear() {
     settings.persons*.away()
     settings.alarms*.off()
+
+    sendNotificationEvent "Alarm(s) Enabled!"
 }
 
 def set() {
@@ -40,7 +43,11 @@ def set() {
       settings.alarms*.strobe()
     }
     
-    sendNotificationEvent "Alarms Disabled!"
+    sendNotificationEvent "Alarm(s) Disabled!"
+
+    def now = new Date()
+    def runTime = new Date(now.getTime() + (settings.reset * 1000 * 60))
+    runOnce(runTime, clear, [overwrite: true])
     //sendPushMessage
 }
 
@@ -49,7 +56,7 @@ def alarmHandler(evt)
     log.debug "${evt.value}"
     if( evt.value != "off") {
         def now = new Date()
-        def runTime = new Date(now.getTime() + (settings.interval * 1000))
+        def runTime = new Date(now.getTime() + (settings.delay * 1000))
         runOnce(runTime, set, [overwrite: true])
     }
     
