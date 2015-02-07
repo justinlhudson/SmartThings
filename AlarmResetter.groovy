@@ -2,17 +2,17 @@ definition(
     name: "AlarmResetter",
     namespace: "Operations",
     author: "justinlhudson",
-    description: "Resets Alarming after seen on the next go round",
+    description: "Resets Alarming (incase someone comes invited without unlocking)",
     category:  "Safety & Security",
     iconUrl: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png",
     iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png")
 
 preferences {
     section("Alarming") {
-        input "alarms", "capability.alarm", title:"Reset these alarms", multiple:true, required:true
-        input "interval", "number", title:"Reset in (~minutes, max 2x)", defaultValue:1
-        input "contacts", "capability.contactSensor", title:"Set contacts on (used to trigger mode)", multiple:true, required:false
-        input("strobe", "bool", title:"Strobe?", description: "Stobe still?", defaultValue: true)
+        input "alarms", "capability.alarm", title:"Reset alarms", multiple:true, required:true
+        input "strobe", "bool", title:"Strobe?", description: "Stobe still?", defaultValue: true
+        input "interval", "number", title:"Reset (seconds)", defaultValue:60
+        input "persons", "capability.presenceSensor", title:"Set present (e.g. Virtual)", multiple:true, required:false
     }
 }
 
@@ -21,45 +21,40 @@ def installed() {
 }
 
 def updated() {
+    unsubscribe()    
     unschedule()
+    
     initialize()
 }
 
-def pollingTask() {
-    if(state.flag == 1) {
-        state.flag = 0
+def clear() {
+    settings.persons*.away()
+    settings.alarms*.off()
+}
 
-        resetAlarms()
-        setContacts()
+def set() {
+    settings.persons*.present()
+    
+    settings.alarms*.off()
+    if(settings.strobe == true) {
+      settings.alarms*.strobe()
     }
-    else if(state.flag == 0) {
-      state.flag = 1
+    
+    sendNotificationEvent "Alarms Disabled!"
+    //sendPushMessage
+}
+
+def alarmHandler(evt)
+{
+    log.debug "${evt.value}"
+    if( evt.value != "off") {
+        def now = new Date()
+        def runTime = new Date(now.getTime() + (settings.interval * 1000))
+        runOnce(runTime, set,[overwrite: true])
     }
-}
-
-def reset() {
-    settings.contacts*.closed()
-}
-
-private setContacts() {
-    settings.contacts*.open()
-}
-
-private resetAlarms() {
-    for (device in settings.alarms) {
-        if(device.currentValue("switch") == "on") {
-            device.off()
-            if(strobe == true) {
-                device.strobe()
-            }
-        }
-      }
+    
 }
 
 private def initialize() {
-    state.flag = 0 // reset
-
-    def minutes = settings."interval".toInteger()
-    def rate = "0 0/${minutes} * * * ?"
-    schedule(rate, pollingTask)
+      subscribe(alarms, "alarm", alarmHandler)
 }

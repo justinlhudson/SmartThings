@@ -20,6 +20,19 @@ metadata {
   }
 }
 
+def installed() {
+  initialize()
+}
+
+def updated() {
+  unschedule()
+  initialize()
+}
+
+private def initialize() {
+  closed()
+}
+
 def open() {
   sendEvent(name: "contact", value: "open")
 }

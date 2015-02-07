@@ -7,7 +7,7 @@ metadata {
   }
 
   tiles {
-    standardTile("button", "device.switch", width: 2, height: 2, inactiveLabel: true, canChangeIcon: false) {
+    standardTile("button", "device.switch", width: 2, height: 2, inactiveLabel: true, canChangeIcon: true) {
       state "off", label: "${name}", action: "on", icon: "st.switch.switch.on", backgroundColor: "#ffffff", nextState: "on"
       state "on", label: "${name}", action: "off", icon: "st.switch.switch.off", backgroundColor: "#79b821", nextState: "off"
     }
@@ -18,6 +18,19 @@ metadata {
     main "button"
     details(["button", "refresh"])
   }
+}
+
+def installed() {
+  initialize()
+}
+
+def updated() {
+  unschedule()
+  initialize()
+}
+
+private def initialize() {
+  off()
 }
 
 def on() {
