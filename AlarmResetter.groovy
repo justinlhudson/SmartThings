@@ -50,7 +50,7 @@ def alarmHandler(evt)
     if( evt.value != "off") {
         def now = new Date()
         def runTime = new Date(now.getTime() + (settings.interval * 1000))
-        runOnce(runTime, set,[overwrite: true])
+        runOnce(runTime, set, [overwrite: true])
     }
     
 }
