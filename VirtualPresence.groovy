@@ -9,10 +9,10 @@ metadata {
 
   tiles {
     standardTile("button", "device.presence", width: 2, height: 2, inactiveLabel: true, canChangeIcon: true) {
-      state "present", label: "${name}", action: "away", icon: "st.presence.tile.mobile-present", backgroundColor: "#53a7c0", nextState: "not present"
-      state "not present", label: "${name}", action: "present", icon: "st.presence.tile.mobile-not-present", backgroundColor: "#ffffff", nextState: "present"
+      state "present", label: "present", action: "away", icon: "st.presence.tile.present", backgroundColor: "#53a7c0", nextState: "not present"
+      state "not present", label: "away", action: "present", icon: "st.presence.tile.not-present", backgroundColor: "#ffffff", nextState: "present"
     }
-    standardTile("refresh", "device.switch", inactiveLabel: false, decoration: "flat") {
+    standardTile("refresh", "device.presence", inactiveLabel: false, decoration: "flat") {
       state "default", label:'', action:"refresh.refresh", icon:"st.secondary.refresh"
     }
 
