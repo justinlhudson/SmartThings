@@ -17,4 +17,4 @@ This solves my problem where bedroom hallway will change location mode to Home (
 
 ## Virtual Devices
 
-Lets on set switches and contacts without actually having any for controlling other application operations states.
+Lets turn on/off devices without actually having any for controlling other application operations states.
