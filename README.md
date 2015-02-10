@@ -3,7 +3,7 @@ SmartThings Development
 
 ## AlarmResetter
 
-Resets alarm if active on next cycle of interval, incase was thrown just before interval makes sure full cycle has alarm.  Can setup to still strobe...
+Resets alarm if active in reset period with delay period before arming again.  Uses Virtual Presence to disable and enable mode changes.
 
 ## ModeWatcher
 
