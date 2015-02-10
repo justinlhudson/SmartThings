@@ -8,8 +8,8 @@ metadata {
 
   tiles {
     standardTile("button", "device.motion", width: 2, height: 2, inactiveLabel: true, canChangeIcon: true) {
-      state "motion", label: "${name}", action: "inactive", icon: "st.motion.motion.active", backgroundColor: "#53a7c0", nextState: "no motion"
-      state "no motion", label: "${name}", action: "active", icon: "st.motion.motion.inactive", backgroundColor: "#ffffff", nextState: "motion"
+      state "active", label: "motion", action: "inactive", icon: "st.motion.motion.active", backgroundColor: "#53a7c0", nextState: "inactive"
+      state "inactive", label: "no motion", action: "active", icon: "st.motion.motion.inactive", backgroundColor: "#ffffff", nextState: "active"
     }
     standardTile("refresh", "device.motion", inactiveLabel: false, decoration: "flat") {
       state "default", label:'', action:"refresh.refresh", icon:"st.secondary.refresh"
