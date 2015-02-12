@@ -15,6 +15,10 @@ preferences {
         input "setMode", "mode", title:"Mode Revert", multiple:false, required:true
         input "window", "number", title:"Window period (seconds)", defaultValue:10
     }
+    section("During this time window") {
+        input "startTime", "time", title: "Start Time?", required:true
+        input "endTime", "time", title: "End Time?", required:true
+    }
 }
 
 def installed() {
@@ -51,7 +55,7 @@ def modeHandler(evt)
 def zone_2_Handler(evt)
 {
     log.debug "Z2: ${evt.value}"
-    if(state.zone_1  > 0 && evt.value == "active") {
+    if(evt.value == "active") {
         state.zone_2 = state.zone_2 + 1
     }
 }
@@ -63,7 +67,6 @@ def zone_1_Handler(evt)
         state.zone_1 = state.zone_1 + 1
     }
     else {
-        def now = new Date()
         def runTime = new Date((new Date()).getTime() + (settings.window * 1000))
         runOnce(runTime, operation, [overwrite: true])
     }
@@ -71,12 +74,18 @@ def zone_1_Handler(evt)
 
 def operation()
 {
-    if(state.zone_1 > 0 && state.zone_2 <= 0) {
-        if(state.prevMode == settings.setMode) {  // if prev mode is mode we want
-            if(state.currentMode != settings.setMode) {
-                setLocationMode(settings.setMode)
-                log.debug "Revert Mode: ${settings.setMode}"  //note: mode not change instantly so false reading
-                sendNotificationEvent "Revert Mode: ${settings.setMode}"
+    def startCheck = timeToday(startTime)
+    def stopCheck = timeToday(endTime)
+
+    if(timeOfDayIsBetween(startCheck, stopCheck, (new Date()), location.timeZone)) {
+        log.debug "Is time..."
+        if(state.zone_1 > 0 && state.zone_2 <= 0) {
+            if(state.prevMode == settings.setMode) {  // if prev mode is mode we want
+                if(state.currentMode != settings.setMode) {
+                    setLocationMode(settings.setMode)
+                    log.debug "Revert Mode: ${settings.setMode}"  //note: mode not change instantly so false reading
+                    sendNotificationEvent "Revert Mode: ${settings.setMode}"
+                }
             }
         }
     }
@@ -88,6 +97,8 @@ private def reset()
 {
     state.zone_1 = 0
     state.zone_2 = 0
+
+    //modeHandler(location.mode)
 }
 
 private def initialize() {
