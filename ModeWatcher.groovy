@@ -51,7 +51,7 @@ def modeHandler(evt)
 def zone_2_Handler(evt)
 {
     log.debug "Z2: ${evt.value}"
-    if(state.zone_1  > 0 && evt.value == "active") {
+    if(evt.value == "active") {
         state.zone_2 = state.zone_2 + 1
     }
 }
@@ -59,7 +59,7 @@ def zone_2_Handler(evt)
 def zone_1_Handler(evt)
 {
     log.debug "Z1: ${evt.value}"
-    if( evt.value == "active") {
+    if(state.zone_2 <= 0 && evt.value == "active") {
         state.zone_1 = state.zone_1 + 1
     }
     else {
