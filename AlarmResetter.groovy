@@ -29,8 +29,10 @@ def updated() {
 }
 
 def clear() {
+    state.alarmActive = false
+ 
     settings.persons*.away()
-    settings.alarms*.off()
+    settings.alarms*.off()   
 
     sendNotificationEvent "Alarm(s) Enabled!"
 }
@@ -54,7 +56,9 @@ def set() {
 def alarmHandler(evt)
 {
     log.debug "${evt.value}"
-    if( evt.value != "off") {
+    if( evt.value != "off" && state.alarmActive == false) {
+        state.alarmActive = true
+        
         def now = new Date()
         def runTime = new Date(now.getTime() + (settings.delay * 1000))
         runOnce(runTime, set, [overwrite: true])
@@ -63,5 +67,6 @@ def alarmHandler(evt)
 }
 
 private def initialize() {
+      state.alarmActive = false
       subscribe(alarms, "alarm", alarmHandler)
 }
