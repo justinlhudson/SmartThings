@@ -11,6 +11,7 @@ preferences {
     section("Alarming") {
         input "alarms", "capability.alarm", title:"Reset alarms", multiple:true, required:true
         input "strobe", "bool", title:"Strobe?", description: "Stobe still?", defaultValue: true
+//        input "siren", "bool", title:"Siren?", description: "Stobe still?", defaultValue: true
         input "delay", "number", title:"Active (seconds)", defaultValue:60
         input "reset", "number", title:"Reset (minutes)", defaultValue:180
         input "persons", "capability.presenceSensor", title:"Set present (e.g. Virtual)", multiple:true, required:false
@@ -32,7 +33,7 @@ def clear() {
     state.alarmActive = false
  
     settings.persons*.away()
-    settings.alarms*.off()   
+    settings.alarms*.off()
 
     sendNotificationEvent "Alarm(s) Enabled!"
 }
@@ -58,7 +59,17 @@ def alarmHandler(evt)
     log.debug "${evt.value}"
     if( evt.value != "off" && state.alarmActive == false) {
         state.alarmActive = true
-        
+/*
+        if(settings.siren == true && settings.strobe == true){
+            settings.alarms*.both()
+        }
+        else if(settings.siren == true) {
+            settings.alarms*.siren()
+        }
+        else if(settings.strobe == true){
+            settings.alarms*.strobe()
+        }
+*/
         def now = new Date()
         def runTime = new Date(now.getTime() + (settings.delay * 1000))
         runOnce(runTime, set, [overwrite: true])
