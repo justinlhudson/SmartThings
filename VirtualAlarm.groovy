@@ -4,7 +4,7 @@ metadata {
  }
 
  tiles {
-  standardTile("alarm", "device.alarm", width: 2, height: 2) {
+  standardTile("alarm", "device.alarm",canChangeBackground: true, inactiveLabel: true, canChangeIcon: true, width: 2, height: 2) {
     state "off", label:'off', action:'both', icon:"st.alarm.alarm.alarm", backgroundColor:"#ffffff", nextState: "both"
     state "both", label:'alarm!', action:'off', icon:"st.alarm.alarm.alarm", backgroundColor:"#e86d13", nextState: "off"
 }
