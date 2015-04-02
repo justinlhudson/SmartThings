@@ -97,7 +97,7 @@ private logField(type, evt, Closure c) {
 
     log.debug "Logging: ${name}, ${type}, ${value}"
     def result = new physicalgraph.device.HubAction(
-        method: "GET",
+        method: "PUT",
         path: "${path}?type=${type}&name=${name}&value=${value}",
         headers: [
             HOST: getHostAddress()
