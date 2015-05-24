@@ -35,30 +35,30 @@ def clear() {
     settings.persons*.away()
     settings.alarms*.off()
 
-    sendNotificationEvent "Alarm(s) Enabled!"
+    sendNotificationEvent "Alarm(s) Reset..."
 }
 
 def set() {
-    settings.persons*.present()
+    if( evt.value != "off") {
+        settings.persons*.present()
     
-    settings.alarms*.off()
-    if(settings.strobe == true) {
-      settings.alarms*.strobe()
-    }
+        settings.alarms*.off()
+        if(settings.strobe == true) {
+            settings.alarms*.strobe()
+        }
     
-    sendNotificationEvent "Alarm(s) Disabled!"
+        sendNotificationEvent "Alarm(s) Silented!"
 
-    def now = new Date()
-    def runTime = new Date(now.getTime() + (settings.reset * 1000 * 60))
-    runOnce(runTime, clear, [overwrite: true])
-    //sendPushMessage
+        def now = new Date()
+        def runTime = new Date(now.getTime() + (settings.reset * 1000 * 60))
+        runOnce(runTime, clear, [overwrite: true])
+        //sendPushMessage
+    }
 }
 
 def alarmHandler(evt)
 {
     log.debug "${evt.value}"
-    if( evt.value != "off" && state.alarmActive == false) {
-        state.alarmActive = true
 /*
         if(settings.siren == true && settings.strobe == true){
             settings.alarms*.both()
@@ -70,11 +70,9 @@ def alarmHandler(evt)
             settings.alarms*.strobe()
         }
 */
-        def now = new Date()
-        def runTime = new Date(now.getTime() + (settings.delay * 1000))
-        runOnce(runTime, set, [overwrite: true])
-    }
-    
+    def now = new Date()
+    def runTime = new Date(now.getTime() + (settings.delay * 1000))
+    runOnce(runTime, set, [overwrite: true])
 }
 
 private def initialize() {
