@@ -48,9 +48,7 @@ def set() {
 
     sendNotificationEvent "Alarm(s) Silented!"
 
-    def now = new Date()
-    def runTime = new Date(now.getTime() + (settings.reset * 1000 * 60))
-    runOnce(runTime, clear, [overwrite: true])
+    runIn(settings.reset*60, clear, [overwrite: true])
     //sendPushMessage
 }
 
@@ -68,10 +66,9 @@ def alarmHandler(evt)
         settings.alarms*.strobe()
     }
 */
-    if( evt.value != "off") {
-        def now = new Date()
-        def runTime = new Date(now.getTime() + (settings.delay * 1000))
-        runOnce(runTime, set, [overwrite: true])
+    if( evt.value != "off" && state.alarmActive == false) {
+        state.alarmActive = true
+        runIn(settings.delay, set, [overwrite: true])
     }
 }
 

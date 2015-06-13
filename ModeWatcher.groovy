@@ -66,7 +66,7 @@ def zone_1_Handler(evt)
     if(state.zone_2 <= 0 && evt.value == "active") {
         state.zone_1 = state.zone_1 + 1
     }
-    else {
+    else if (evt.value == "inactive") {
         def runTime = new Date((new Date()).getTime() + (settings.window * 1000))
         runOnce(runTime, operation, [overwrite: true])
     }
