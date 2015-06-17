@@ -10,7 +10,7 @@ definition(
 preferences {
     section("Alarming") {
         input "alarms", "capability.alarm", title:"Reset alarms", multiple:true, required:true
-        input "strobe", "bool", title:"Strobe?", description: "Stobe still?", defaultValue: true
+        input "strobe", "bool", title:"Strobe?", description: "Strobe still?", defaultValue: true
 //        input "siren", "bool", title:"Siren?", description: "Stobe still?", defaultValue: true
         input "delay", "number", title:"Active (seconds)", defaultValue:60
         input "reset", "number", title:"Reset (minutes)", defaultValue:180
@@ -48,7 +48,7 @@ def set() {
 
     sendNotificationEvent "Alarm(s) Silented!"
 
-    runIn(settings.reset*60, clear, [overwrite: true])
+    runIn((settings.reset*60), clear, [overwrite: true])
     //sendPushMessage
 }
 
