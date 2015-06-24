@@ -10,10 +10,10 @@ definition(
 preferences {
     section("Alarming") {
         input "alarms", "capability.alarm", title:"Reset alarms", multiple:true, required:true
-        input "strobe", "bool", title:"Strobe?", description: "Strobe still?", defaultValue: true
+        input "strobe", "bool", title:"Strobe?", description: "Stobe still?", defaultValue: true
 //        input "siren", "bool", title:"Siren?", description: "Stobe still?", defaultValue: true
         input "delay", "number", title:"Active (seconds)", defaultValue:60
-        input "reset", "number", title:"Reset (minutes)", defaultValue:180
+        input "reset", "number", title:"Reset (minutes)", defaultValue:5
         input "persons", "capability.presenceSensor", title:"Set present (e.g. Virtual)", multiple:true, required:false
     }
 }
@@ -30,10 +30,10 @@ def updated() {
 }
 
 def clear() {
-    state.alarmActive = false
- 
     settings.persons*.away()
     settings.alarms*.off()
+
+    state.alarmActive = false
 
     sendNotificationEvent "Alarm(s) Reset..."
 }
@@ -41,14 +41,16 @@ def clear() {
 def set() {
     settings.persons*.present()
 
-    settings.alarms*.off()
     if(settings.strobe == true) {
         settings.alarms*.strobe()
+    }
+    else {
+        settings.alarms*.off()
     }
 
     sendNotificationEvent "Alarm(s) Silented!"
 
-    runIn((settings.reset*60), clear, [overwrite: true])
+    runIn(settings.reset*60, clear, [overwrite: true])
     //sendPushMessage
 }
 
