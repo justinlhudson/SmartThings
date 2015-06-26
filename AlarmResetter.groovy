@@ -8,14 +8,16 @@ definition(
     iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png")
 
 preferences {
-    section("Alarming") {
+    section("Alarming...") {
         input "alarms", "capability.alarm", title:"Reset alarms", multiple:true, required:true
         input "strobe", "bool", title:"Strobe?", description: "Stobe still?", defaultValue: true
 //        input "siren", "bool", title:"Siren?", description: "Stobe still?", defaultValue: true
         input "delay", "number", title:"Active (seconds)", defaultValue:60
         input "reset", "number", title:"Reset (minutes)", defaultValue:5
-        input "setMode", "mode", title:"Mode Revert", multiple:false, required:false
     }
+    section ("Operation...") {
+    	input "setMode", "mode", title:"Mode Change", multiple:false, required:false
+  }
 }
 
 def installed() {
