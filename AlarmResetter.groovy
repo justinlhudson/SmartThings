@@ -14,7 +14,7 @@ preferences {
 //        input "siren", "bool", title:"Siren?", description: "Stobe still?", defaultValue: true
         input "delay", "number", title:"Active (seconds)", defaultValue:60
         input "reset", "number", title:"Reset (minutes)", defaultValue:5
-        input "persons", "capability.presenceSensor", title:"Set present (e.g. Virtual)", multiple:true, required:false
+        input "setMode", "mode", title:"Mode Revert", multiple:false, required:false
     }
 }
 
@@ -30,8 +30,6 @@ def updated() {
 }
 
 def clear() {
-    settings.persons*.away()
-
     if(settings.strobe != true) {
         settings.alarms*.off()
     }
@@ -42,8 +40,6 @@ def clear() {
 }
 
 def set() {
-    settings.persons*.present()
-
     if(settings.strobe == true) {
         settings.alarms*.strobe()
         sendNotificationEvent "Alarm(s) Silented!"
@@ -72,6 +68,11 @@ def alarmHandler(evt)
 */
     if( evt.value != "off" && state.alarmActive == false) {
         sendNotificationEvent "Alarm(s) Active!"
+
+		if(settings.setMode != null && settings.setMode != "" ) {
+        	log.debug "changed mode: ${settings.setMode}"
+			setLocationMode(settings.setMode)
+        }
 
         state.alarmActive = true
         runIn(settings.delay, set, [overwrite: true])
