@@ -15,9 +15,6 @@ preferences {
         input "delay", "number", title:"Active (seconds)", defaultValue:60
         input "reset", "number", title:"Reset (minutes)", defaultValue:5
     }
-    section ("Operation...") {
-    	input "setMode", "mode", title:"Mode Change", multiple:false, required:false
-  }
 }
 
 def installed() {
@@ -70,11 +67,6 @@ def alarmHandler(evt)
 */
     if( evt.value != "off" && state.alarmActive == false) {
         sendNotificationEvent "Alarm(s) Active!"
-
-		if(settings.setMode != null && settings.setMode != "" ) {
-        	log.debug "changed mode: ${settings.setMode}"
-			setLocationMode(settings.setMode)
-        }
 
         state.alarmActive = true
         runIn(settings.delay, set, [overwrite: true])
