@@ -29,7 +29,7 @@ def updated() {
 }
 
 def clear() {
-    if(settings.strobe != true) {
+    if(settings.strobe == true) {
         settings.alarms*.off()
     }
 
@@ -66,9 +66,9 @@ def alarmHandler(evt)
     }
 */
     if( evt.value != "off" && state.alarmActive == false) {
-        sendNotificationEvent "Alarm(s) Active!"
-
         state.alarmActive = true
+
+        sendNotificationEvent "Alarm(s) Active!"
         runIn(settings.delay, set, [overwrite: true])
     }
 }
