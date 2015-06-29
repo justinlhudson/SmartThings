@@ -67,8 +67,10 @@ def zone_1_Handler(evt)
     if(state.zone_2 <= 0 && evt.value == "active") {
         state.zone_1 = state.zone_1 + 1
         
-        setLocationMode(settings.setMode)
-        log.debug "Set Mode: ${settings.setMode}"
+        if(state.currentMode != settings.setMode) {
+    		setLocationMode(settings.setMode)
+            log.debug "Set Mode: ${settings.setMode}"
+        }
     }
     else if (evt.value == "inactive") {
         def runTime = new Date((new Date()).getTime() + (settings.window * 1000))
@@ -83,13 +85,13 @@ def operation()
 
     if(timeOfDayIsBetween(startCheck, stopCheck, (new Date()), location.timeZone)) {
         if(state.zone_1 > 0 && state.zone_2 <= 0) {
-            //if(state.prevMode == settings.setMode) {  // if prev mode is mode we want
-              //  if(state.currentMode != settings.setMode) {
+            if(state.prevMode == settings.revertMode) {  // if prev mode is mode we want
+                if(state.currentMode != settings.revertMode) {
                     setLocationMode(settings.revertMode)
                     log.debug "Revert Mode: ${settings.revertMode}"  //note: mode not change instantly so false reading
                     sendNotificationEvent "Revert Mode: ${settings.revertMode}"
-               // }
-          //  }
+                }
+            }
         }
     }
 
