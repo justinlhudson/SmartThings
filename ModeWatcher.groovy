@@ -16,10 +16,12 @@ preferences {
         input "setMode", "mode", title:"Mode Change", multiple:false, required:true
         input "window", "number", title:"Window period (seconds)", defaultValue:10
     }
+    /*
     section("During this time window") {
         input "startTime", "time", title: "Start Time?", required:true
         input "endTime", "time", title: "End Time?", required:true
     }
+    */
 }
 
 def installed() {
@@ -65,11 +67,13 @@ def zone_1_Handler(evt)
 {
     log.debug "Z1: ${evt.value}"
     if(state.zone_2 <= 0 && evt.value == "active") {
-        state.zone_1 = state.zone_1 + 1
-        
-        if(state.currentMode != settings.setMode) {
-    		setLocationMode(settings.setMode)
-            log.debug "Set Mode: ${settings.setMode}"
+        if(state.currentMode == settings.revertMode) { // before any changes make sure in mode we care about 
+            state.zone_1 = state.zone_1 + 1
+            
+            if(state.currentMode != settings.setMode) {
+                setLocationMode(settings.setMode)
+                log.debug "Set Mode: ${settings.setMode}"
+            }
         }
     }
     else if (evt.value == "inactive") {
@@ -78,19 +82,25 @@ def zone_1_Handler(evt)
     }
 }
 
+private isReady()
+{
+    def startCheck = timeToday(startTime)
+    def stopCheck = timeToday(endTime)
+
+    return timeOfDayIsBetween(startCheck, stopCheck, (new Date()), location.timeZone)
+}
+
 def operation()
 {
     def startCheck = timeToday(startTime)
     def stopCheck = timeToday(endTime)
 
-    if(timeOfDayIsBetween(startCheck, stopCheck, (new Date()), location.timeZone)) {
-        if(state.zone_1 > 0 && state.zone_2 <= 0) {
-            if(state.prevMode == settings.revertMode) {  // if prev mode is mode we want
-                if(state.currentMode != settings.revertMode) {
-                    setLocationMode(settings.revertMode)
-                    log.debug "Revert Mode: ${settings.revertMode}"  //note: mode not change instantly so false reading
-                    sendNotificationEvent "Revert Mode: ${settings.revertMode}"
-                }
+    if(state.zone_1 > 0 && state.zone_2 <= 0) {
+        if(state.prevMode == settings.revertMode) {  // if prev mode is mode we want
+            if(state.currentMode != settings.revertMode) {
+                setLocationMode(settings.revertMode)
+                log.debug "Revert Mode: ${settings.revertMode}"  //note: mode not change instantly so false reading
+                sendNotificationEvent "Revert Mode: ${settings.revertMode}"
             }
         }
     }
