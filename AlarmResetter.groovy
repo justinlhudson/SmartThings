@@ -29,9 +29,7 @@ def updated() {
 }
 
 def clear() {
-    if(settings.strobe == true) {
-        settings.alarms*.off()
-    }
+    settings.alarms*.off()
 
     state.alarmActive = false
 
@@ -42,9 +40,6 @@ def set() {
     if(settings.strobe == true) {
         settings.alarms*.strobe()
         sendNotificationEvent "Alarm(s) Silented!"
-    }
-    else {
-        settings.alarms*.off()
     }
 
     runIn(settings.reset*60, clear, [overwrite: true])
