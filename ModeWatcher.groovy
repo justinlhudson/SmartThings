@@ -102,7 +102,7 @@ def operation()
             if(state.currentMode != settings.revertMode) {
                 setLocationMode(settings.revertMode)
                 log.debug "Revert Mode: ${settings.revertMode}"  //note: mode not change instantly so false reading
-                sendNotificationEvent "Revert Mode: ${settings.revertMode}"
+                //sendNotificationEvent "Revert Mode: ${settings.revertMode}"
             }
         }
     }
