@@ -36,13 +36,14 @@ def clear() {
 }
 
 def set() {
-    if(settings.strobe == true) {
+	if (state.alarmValue != "strobe") {
+    	clear()
+    }
+    else if(settings.strobe == true) {
         settings.alarms*.strobe()
         sendNotificationEvent "Alarm(s) Silented!"
+        runIn(settings.reset*60, clear, [overwrite: true])
     }
-
-    runIn(settings.reset*60, clear, [overwrite: true])
-    //sendPushMessage
 }
 
 def alarmHandler(evt)
@@ -60,10 +61,11 @@ def alarmHandler(evt)
     }
 */
     if( evt.value != "off" && state.alarmActive == false) {
+    	state.alarmValue = evt.value
         state.alarmActive = true
 
         sendNotificationEvent "Alarm(s) Active!"
-        runIn(settings.delay, set, [overwrite: true])
+        runIn(settings.delay, set, [overwrite: false])
     }
 }
 
