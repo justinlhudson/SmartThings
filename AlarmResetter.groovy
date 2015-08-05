@@ -11,9 +11,8 @@ preferences {
     section("Alarming...") {
         input "alarms", "capability.alarm", title:"Reset alarms", multiple:true, required:true
         input "strobe", "bool", title:"Strobe?", description: "Stobe still?", defaultValue: true
-//        input "siren", "bool", title:"Siren?", description: "Stobe still?", defaultValue: true
         input "delay", "number", title:"Active (seconds)", defaultValue:60
-        input "reset", "number", title:"Reset (minutes)", defaultValue:5
+        input "reset", "number", title:"Reset (seconds)", defaultValue:60
     }
 }
 
@@ -26,21 +25,56 @@ def updated() {
     initialize()
 }
 
+def alarms_both() {
+    log.debug "alarms_both"
+    settings.alarms?.both()
+    pause(1000)
+    settings.alarms.each {
+    while ( it != null && it.latestValue("alarm") != "both") {
+      it.both()
+        pause(1000)
+      }
+    }
+}
+
+def alarms_strobe() {
+    log.debug "alarms_strobe"
+    settings.alarms?.strobe()
+    pause(1000)
+    settings.alarms.each {
+    while ( it != null && it.latestValue("alarm") != "strobe") {
+        it.strobe()
+        pause(1000)
+      }
+    }
+}
+
+def alarms_off() {
+    log.debug "alarms_off"
+    settings.alarms?.off()
+    pause(1000)
+    settings.alarms.each {
+    while ( it != null && it.latestValue("alarm") != "off") {
+      it.off()
+        pause(1000)
+      }
+    }
+}
+
 def clear() {
-    settings.alarms*.off()
+    log.debug "clear"
+    alarms_off()
     state.alarmActive = false
     sendNotificationEvent "Alarm(s) Reset..."
 }
 
 def set() {
-    if (settings.strobe == false && state.alarmValue == "strobe") {
-        clear()
-    }
-    else if(settings.strobe == true) {
-        settings.alarms*.strobe()
-        sendNotificationEvent "Alarm(s) Silented!"
-        runIn(settings.reset*60, clear, [overwrite: true])
-    }
+  log.debug "set"
+  if(settings.strobe == true) {
+        alarms_strobe()
+  }
+  sendNotificationEvent "Alarm(s) Silented!"
+  runIn(settings.reset, clear, [overwrite: true])
 }
 
 def alarmHandler(evt)
@@ -58,8 +92,8 @@ def alarmHandler(evt)
     }
 */
     if( evt.value != "off" && state.alarmActive == false) {
-        state.alarmValue = evt.value
-        state.alarmActive = true
+      state.alarmValue = evt.value
+      state.alarmActive = true
 
         sendNotificationEvent "Alarm(s) Active!"
         runIn(settings.delay, set, [overwrite: true])
