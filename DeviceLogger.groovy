@@ -1,5 +1,5 @@
 definition (
-    name: "DeviceLogger",
+    name: "Device Logger",
     namespace: "Operations",
     author: "justinlhudson",
     description: "Logger",

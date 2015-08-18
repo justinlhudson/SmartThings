@@ -1,5 +1,5 @@
 definition(
-    name: "ModeWatcher",
+    name: "Mode Watcher",
     namespace: "Operations",
     author: "justinlhudson",
     description: "Changing mode on zones (i.e. Zone 1 -> Zone 2 => New Mode).",

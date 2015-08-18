@@ -1,5 +1,5 @@
 definition(
-    name: "AlarmResetter",
+    name: "Alarm Resetter",
     namespace: "Operations",
     author: "justinlhudson",
     description: "Resets Alarming (incase someone comes invited without unlocking)",
