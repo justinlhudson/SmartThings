@@ -7,14 +7,14 @@
 var CLIENT_ID = process.argv[2];
 var CLIENT_SECRET = process.argv[3];
 
-var request = require('request');
-var express = require('express'),
+var request = require('/usr/local/lib/node_modules/request');
+var express = require('/usr/local/lib/node_modules/express'),
 
 app = express();
 
 app.set('port', 3000);
 
-var oauth2 = require('simple-oauth2')({
+var oauth2 = require('/usr/local/lib/node_modules/simple-oauth2')({
   clientID: CLIENT_ID,
   clientSecret: CLIENT_SECRET,
   site: 'https://graph.api.smartthings.com'
