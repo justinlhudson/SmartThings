@@ -37,13 +37,15 @@ def updated() {
 
 def modeHandler(evt)
 {
-    state.prevMode = state.currentMode
-    state.currentMode = evt.value
+    if(state.currentMode != evt.value) {
+      state.prevMode = state.currentMode
+      state.currentMode = evt.value
 
-    sendPush evt.value
+      sendPush evt.value
 
-    log.debug "Prev. Mode: ${state.prevMode}" 
-    log.debug "Current Mode: ${state.currentMode}"
+      log.debug "Prev. Mode: ${state.prevMode}" 
+      log.debug "Current Mode: ${state.currentMode}"
+    }
 /*
     if (location.mode == "Away") {
 
