@@ -57,7 +57,8 @@ def init() {
   runEvery5Minutes("checkForSevereWeather")
 
   // HACK: keep alive
-  subscribe(location, "mode", modeHandler)
+  subscribe(location, "sunset", resetHandler)
+  subscribe(location, "sunrise", resetHandler)
 }
 
 def alarms_both() {
@@ -100,7 +101,7 @@ def getRandom(int min, int max) {
   return Math.abs(new Random().nextInt() % max + min)
 }
 
-def modeHandler(evt)
+def resetHandler(evt)
 {
   updated()
 }
