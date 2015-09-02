@@ -23,6 +23,10 @@ Example code for retrieving token for access into endpoint.
 
 Resets alarm if active in reset period with delay period before arming again.  Uses Virtual Presence to disable and enable mode changes.
 
+## Device Logger
+
+Does "put" request to send device name and value to local server for logging [WebApplication-Server](https://github.com/justinlhudson/WebApplication-Server)
+
 ## ModeWatcher
 
 Watches for zone 1 entry into zone 2 and if no entry into zone 2 will revert back to location mode before zone 1 was entered.  
