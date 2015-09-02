@@ -1,6 +1,24 @@
 # SmartThings
 SmartThings Development
 
+## SevereWeatherAlert
+
+Alarm, text, and push notification on changes in weather alert(s). Allows filtering for ignore list of alert(s) as well as alarm auto shut off.
+
+## DeviceEndpoints
+
+Web Service application endpoint for switches as starting point.
+
+Note: Was being developed for Amazon Echo but now is supported.
+
+### smartThings.js
+
+Example code for reaching endpoint.
+
+### token.js
+
+Example code for retrieving token for access into endpoint.
+
 ## AlarmResetter
 
 Resets alarm if active in reset period with delay period before arming again.  Uses Virtual Presence to disable and enable mode changes.
