@@ -208,7 +208,8 @@ private send(message) {
         if (settings.phone3) {
           sendSms phone3, message
         }
-        sendPush message
+        try { sendPush message }
+        catch (all) { }
       }
     }
 }
