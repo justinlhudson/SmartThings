@@ -134,18 +134,18 @@ def checkForSevereWeather() {
   if (newAlerts != oldAlerts) {
     state.lastAlerts = newAlerts
 
-    def foundAlerts = []  // changes from last iteration
+    def alertsFound = []  // changes from last iteration
 
     // if a new alert is added to list
     newAlerts.each { newAlert ->
       if(!oldAlerts.contains(newAlert)) {
         log.debug("alert")
-        foundAlerts.add(newAlert)
+        alertsFound.add(newAlert)
       }
     }
 
     // if more then one alert at same time (rare...)
-    foundAlerts.each { alertFound ->
+    alertsFound.each { alertFound ->
       def alert = alerts.find { it.type == alertFound }
         if(alert && alertFilter(alert.type)) {
           def msg = "Weather Alert! ${alert.type} from ${alert.date} until ${alert.expires}"
