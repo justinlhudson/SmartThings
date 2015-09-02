@@ -31,6 +31,7 @@ preferences {
   }
   section ("Options...") {
     input "zipcode", "text", title: "Zip Code", required: false
+    // http://www.wunderground.com/weather/api/d/docs?d=data/alerts
     input "filters", "text", title: "Filter Alerts (x,x,...)", required: false
   }
 }
@@ -165,7 +166,7 @@ def checkForSevereWeather() {
 }
 
 def alertFilter(String type) {
-  def filterList = ["PUB", "REP", "REC", "SPE", "HEA"]
+  def filterList = ["PUB", "REP", "REC"]
   if(settings.filters) {
    filterList.addAll(settings.filters.split(','))
   }
