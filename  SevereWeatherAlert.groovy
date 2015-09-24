@@ -64,8 +64,6 @@ def init() {
 
 def alarms_both() {
     log.debug "alarms_both"
-    settings.alarms?.both()
-    pause(500)
     settings.alarms.each {
     if ( it != null && it.latestValue("alarm") != "both") {
       it.both()
@@ -74,22 +72,8 @@ def alarms_both() {
     }
 }
 
-def alarms_strobe() {
-    log.debug "alarms_strobe"
-    settings.alarms?.strobe()
-    pause(500)
-    settings.alarms.each {
-    if ( it != null && it.latestValue("alarm") != "strobe") {
-        it.strobe()
-        runIn(1, alarms_strobe, [overwrite: true])
-      }
-    }
-}
-
 def alarms_off() {
     log.debug "alarms_off"
-    settings.alarms?.off()
-    pause(500)
     settings.alarms.each {
     if ( it != null && it.latestValue("alarm") != "off") {
       it.off()

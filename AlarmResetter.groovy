@@ -25,26 +25,16 @@ def updated() {
     initialize()
 }
 
-def alarms_both() {
-    log.debug "alarms_both"
-    settings.alarms?.both()
-    pause(500)
-    settings.alarms.each {
-    if ( it != null && it.latestValue("alarm") != "both") {
-      it.both()
-      runIn(1, alarms_both, [overwrite: true])
-      }
-    }
-}
-
 def alarms_strobe() {
     log.debug "alarms_strobe"
     settings.alarms?.strobe()
-    pause(500)
+    pause(1500)
+    state.strobeCount = 0
     settings.alarms.each {
-    if ( it != null && it.latestValue("alarm") != "strobe") {
+    while ( it != null && it.latestValue("alarm").toLowerCase() != "strobe" && state.strobeCount <= 3) {
         it.strobe()
-        runIn(1, alarms_strobe, [overwrite: true])
+        state.strobeCount = state.strobeCount + 1
+        pause(1500)
       }
     }
 }
@@ -52,11 +42,11 @@ def alarms_strobe() {
 def alarms_off() {
     log.debug "alarms_off"
     settings.alarms?.off()
-    pause(500)
+    pause(1500)
     settings.alarms.each {
-    if ( it != null && it.latestValue("alarm") != "off") {
+    if ( it != null && it.latestValue("alarm").toLowerCase() != "off") {
       it.off()
-      runIn(1, alarms_off, [overwrite: true])
+      runIn(3, alarms_off, [overwrite: true])
       }
     }
 }
@@ -72,9 +62,13 @@ def set() {
   log.debug "set"
   if(settings.strobe == true) {
         alarms_strobe()
+                sendNotificationEvent "Alarm(s) Silented!"
+        runIn(settings.reset, clear, [overwrite: true])
   }
-  sendNotificationEvent "Alarm(s) Silented!"
-  runIn(settings.reset, clear, [overwrite: true])
+  else {
+   clear()
+  }
+
 }
 
 def alarmHandler(evt)
@@ -95,8 +89,8 @@ def alarmHandler(evt)
       state.alarmValue = evt.value
       state.alarmActive = true
 
-        sendNotificationEvent "Alarm(s) Active!"
-        runIn(settings.delay, set, [overwrite: true])
+      sendNotificationEvent "Alarm(s) Active!"
+      runIn(settings.delay, set, [overwrite: true])
     }
 }
 
