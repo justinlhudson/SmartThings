@@ -32,7 +32,7 @@ preferences {
   section ("Options...") {
     input "zipcode", "text", title: "Zip Code", required: false
     // http://www.wunderground.com/weather/api/d/docs?d=data/alerts
-    input "filters", "text", title: "Filter Alerts (x,x,...)", required: false
+    input "filters", "text", title: "Filter Alerts (x,x,...)", required: false, defaultValue:"TOW,SEW,WAT,FLO,FOG,SPE"
   }
 }
 
