@@ -64,20 +64,22 @@ def init() {
 
 def alarms_both() {
     log.debug "alarms_both"
+    settings.alarms?.both()
     settings.alarms.each {
-    if ( it != null && it.latestValue("alarm") != "both") {
+    while ( it && it.latestValue("alarm") != "both") {
       it.both()
-      runIn(1, alarms_both, [overwrite: true])
+      pause(1000)
       }
     }
 }
 
 def alarms_off() {
     log.debug "alarms_off"
+    settings.alarms?.off()
     settings.alarms.each {
-    if ( it != null && it.latestValue("alarm") != "off") {
-      it.off()
-      runIn(1, alarms_off, [overwrite: true])
+      while ( it != null && it.latestValue("alarm") != "off") {
+        it.off()
+        pause(1000)
       }
     }
 }

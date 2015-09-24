@@ -28,10 +28,9 @@ def updated() {
 def alarms_strobe() {
     log.debug "alarms_strobe"
     settings.alarms?.strobe()
-    pause(500)
     state.strobeCount = 0
     settings.alarms.each {
-    while ( it != null && it.latestValue("alarm") != "strobe" && state.strobeCount <= 3) {
+      while ( it != null && it.latestValue("alarm") != "strobe" && state.strobeCount <= 3) {
         it.strobe()
         state.strobeCount = state.strobeCount + 1
         pause(1000)
@@ -42,11 +41,10 @@ def alarms_strobe() {
 def alarms_off() {
     log.debug "alarms_off"
     settings.alarms?.off()
-    pause(500)
     settings.alarms.each {
-    if ( it != null && it.latestValue("alarm") != "off") {
-      it.off()
-      runIn(1, alarms_off, [overwrite: true])
+      while ( it != null && it.latestValue("alarm") != "off") {
+        it.off()
+        pause(1000)
       }
     }
 }
