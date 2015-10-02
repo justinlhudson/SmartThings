@@ -27,16 +27,30 @@ def updated() {
 
 def alarms_strobe() {
     log.debug "alarms_strobe"
-    settings.alarms?.strobe()
+    def x = 3
+  x.times {
+      settings.alarms.each {
+        if ( it != null && it.latestValue("alarm") != "strobe") {
+          it.strobe()
+        }
+      }
+      if( n > 0) {
+        pause(3000)
+      }
+    }
 }
 
 def alarms_off() {
     log.debug "alarms_off"
-    settings.alarms?.off()
-    settings.alarms.each {
-      while ( it != null && it.latestValue("alarm") != "off") {
-        it.off()
-        pause(1000)
+    def x = 6
+  x.times {
+      settings.alarms.each {
+        if ( it != null && it.latestValue("alarm") != "off") {
+          it.off()
+        }
+      }
+      if( n > 0) {
+        pause(1500)
       }
     }
 }
@@ -44,7 +58,6 @@ def alarms_off() {
 def clear() {
     log.debug "clear"
     alarms_off()
-    state.alarmActive = false
     sendNotificationEvent "Alarm(s) Reset..."
 }
 
@@ -71,16 +84,13 @@ def alarmHandler(evt)
         settings.alarms*.strobe()
     }
 */
-    if( evt.value != "off" && state.alarmActive == false) {
+    if( evt.value != "off") {
       state.alarmValue = evt.value
-      state.alarmActive = true
-
-        sendNotificationEvent "Alarm(s) Active!"
-        runIn(settings.delay, set, [overwrite: true])
+      sendNotificationEvent "Alarm(s) Active!"
+      runIn(settings.delay, set, [overwrite: true])
     }
 }
 
 private def initialize() {
-      state.alarmActive = false
       subscribe(alarms, "alarm", alarmHandler)
 }

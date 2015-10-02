@@ -62,27 +62,38 @@ def init() {
   subscribe(location, "sunrise", resetHandler)
 }
 
-def alarms_both() {
-    log.debug "alarms_both"
-    settings.alarms?.both()
-    settings.alarms.each {
-    while ( it && it.latestValue("alarm") != "both") {
-      it.both()
-      pause(1000)
+def alarms_off() {
+    log.debug "alarms_off"
+    def x = 6
+  x.times {
+      settings.alarms.each {
+        if ( it != null && it.latestValue("alarm") != "off") {
+          it.off()
+        }
+      }
+      if( n > 0) {
+        pause(1500)
       }
     }
 }
 
-def alarms_off() {
-    log.debug "alarms_off"
-    settings.alarms?.off()
-    settings.alarms.each {
-      while ( it != null && it.latestValue("alarm") != "off") {
-        it.off()
+def alarms_both() {
+    log.debug "alarms_both"
+    def x = 10
+  x.times {
+      settings.alarms.each {
+        if ( it != null && it.latestValue("alarm") != "both") {
+          it.both()
+        }
+      }
+      if( n > 0) {
         pause(1000)
       }
     }
 }
+
+
+
 
 def getRandom(int min, int max) {
   return Math.abs(new Random().nextInt() % max + min)

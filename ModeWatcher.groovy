@@ -86,19 +86,8 @@ def zone_1_Handler(evt)
     }
 }
 
-private isReady()
-{
-    def startCheck = timeToday(startTime)
-    def stopCheck = timeToday(endTime)
-
-    return timeOfDayIsBetween(startCheck, stopCheck, (new Date()), location.timeZone)
-}
-
 def operation()
 {
-    def startCheck = timeToday(startTime)
-    def stopCheck = timeToday(endTime)
-
     if(state.zone_1 > 0 && state.zone_2 <= 0) {
         if(state.prevMode == settings.revertMode) {  // if prev mode is mode we want
             if(state.currentMode != settings.revertMode) {
