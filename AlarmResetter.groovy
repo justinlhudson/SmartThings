@@ -28,14 +28,6 @@ def updated() {
 def alarms_strobe() {
     log.debug "alarms_strobe"
     settings.alarms?.strobe()
-    state.strobeCount = 0
-    settings.alarms.each {
-      while ( it != null && it.latestValue("alarm") != "strobe" && state.strobeCount <= 3) {
-        it.strobe()
-        state.strobeCount = state.strobeCount + 1
-        pause(1000)
-      }
-    }
 }
 
 def alarms_off() {
