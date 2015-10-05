@@ -21,7 +21,7 @@ Example code for retrieving token for access into endpoint.
 
 ## AlarmResetter
 
-Resets alarm if active in reset period with delay period before arming again.
+Resets alarm if active in reset period with delay period before disarm.
 
 ## Device Logger
 

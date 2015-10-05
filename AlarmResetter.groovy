@@ -10,9 +10,7 @@ definition(
 preferences {
     section("Alarming...") {
         input "alarms", "capability.alarm", title:"Reset alarms", multiple:true, required:true
-        input "strobe", "bool", title:"Strobe?", description: "Stobe still?", defaultValue: true
-        input "delay", "number", title:"Active (seconds)", defaultValue:60
-        input "reset", "number", title:"Reset (seconds)", defaultValue:60
+        input "reset", "number", title:"Reset (seconds)", defaultValue:30
     }
 }
 
@@ -40,6 +38,21 @@ def alarms_strobe() {
     }
 }
 
+def alarms_both() {
+    log.debug "alarms_both"
+    def x = 6
+  x.times {
+      settings.alarms.each {
+        if ( it != null && it.latestValue("alarm") != "off") {
+          it.both()
+        }
+      }
+      if( n > 0) {
+        pause(1500)
+      }
+    }
+}
+
 def alarms_off() {
     log.debug "alarms_off"
     def x = 6
@@ -57,17 +70,9 @@ def alarms_off() {
 
 def clear() {
     log.debug "clear"
+    state.flag = false
     alarms_off()
     sendNotificationEvent "Alarm(s) Reset..."
-}
-
-def set() {
-  log.debug "set"
-  if(settings.strobe == true) {
-        alarms_strobe()
-  }
-  sendNotificationEvent "Alarm(s) Silented!"
-  runIn(settings.reset, clear, [overwrite: true])
 }
 
 def alarmHandler(evt)
@@ -84,13 +89,21 @@ def alarmHandler(evt)
         settings.alarms*.strobe()
     }
 */
-    if( evt.value != "off") {
-      state.alarmValue = evt.value
+    if( evt.value != "off" && state.flag == false) {
+      state.flag = true
+      if(evt.value == "strobe") {
+        alarms_strobe()
+      }
+      else if(evt.value == "both") {
+        alarms_both()
+      }
+
       sendNotificationEvent "Alarm(s) Active!"
-      runIn(settings.delay, set, [overwrite: true])
+      runIn(settings.reset, clear, [overwrite: true])
     }
 }
 
 private def initialize() {
-      subscribe(alarms, "alarm", alarmHandler)
+  state.flag = false
+  subscribe(alarms, "alarm", alarmHandler)
 }
