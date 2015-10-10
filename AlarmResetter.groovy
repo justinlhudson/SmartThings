@@ -26,7 +26,7 @@ def updated() {
 def alarms_strobe() {
     log.debug "alarms_strobe"
     def x = 3
-  x.times {
+  x.times { n ->
       settings.alarms.each {
         if ( it != null && it.latestValue("alarm") != "strobe") {
           it.strobe()
@@ -41,9 +41,9 @@ def alarms_strobe() {
 def alarms_both() {
     log.debug "alarms_both"
     def x = 6
-  x.times {
+  x.times { n ->
       settings.alarms.each {
-        if ( it != null && it.latestValue("alarm") != "off") {
+        if ( it != null && it.latestValue("alarm") != "both") {
           it.both()
         }
       }
@@ -56,13 +56,13 @@ def alarms_both() {
 def alarms_off() {
     log.debug "alarms_off"
     def x = 6
-  x.times {
+  x.times { n ->
       settings.alarms.each {
         if ( it != null && it.latestValue("alarm") != "off") {
           it.off()
         }
       }
-      if( n > 0) {
+      if ( n > 0 ) {
         pause(1500)
       }
     }
@@ -78,23 +78,12 @@ def clear() {
 def alarmHandler(evt)
 {
     log.debug "${evt.value}"
-/*
-    if(settings.siren == true && settings.strobe == true){
-        settings.alarms*.both()
-    }
-    else if(settings.siren == true) {
-        settings.alarms*.siren()
-    }
-    else if(settings.strobe == true){
-        settings.alarms*.strobe()
-    }
-*/
     if( evt.value != "off" && state.flag == false) {
       state.flag = true
       if(evt.value == "strobe") {
         alarms_strobe()
       }
-      else if(evt.value == "both") {
+      else {
         alarms_both()
       }
 

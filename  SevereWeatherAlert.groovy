@@ -65,7 +65,7 @@ def init() {
 def alarms_off() {
     log.debug "alarms_off"
     def x = 6
-  x.times {
+  x.times { n ->
       settings.alarms.each {
         if ( it != null && it.latestValue("alarm") != "off") {
           it.off()
@@ -79,15 +79,15 @@ def alarms_off() {
 
 def alarms_both() {
     log.debug "alarms_both"
-    def x = 10
-  x.times {
+    def x = 25
+  x.times { n ->
       settings.alarms.each {
         if ( it != null && it.latestValue("alarm") != "both") {
           it.both()
         }
       }
       if( n > 0) {
-        pause(1000)
+        pause(500)
       }
     }
 }
