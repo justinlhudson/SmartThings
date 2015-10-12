@@ -23,6 +23,10 @@ Example code for retrieving token for access into endpoint.
 
 Resets alarm if active in reset period with delay period before disarm.
 
+## ModeLocker
+
+Monitors switches for on/active to determine if mode does not get changed during normal cycle.  Can use simulated switch for phone app or actual switch to lock "home" location for example.
+
 ## Device Logger
 
 Does "put" request to send device name and value to local server for logging [WebApplication-Server](https://github.com/justinlhudson/WebApplication-Server)
