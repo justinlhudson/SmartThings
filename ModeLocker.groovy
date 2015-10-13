@@ -42,7 +42,7 @@ def switchOnHandler(evt) {
 }
 
 def modeHandler(evt) {
-    log.debug "{evt.value}"
+    log.debug "${evt.value}"
     modeLock()
 }
 
