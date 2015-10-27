@@ -63,7 +63,10 @@ def zone_2_Handler(evt)
 {
     log.debug "Z2: ${evt.value}"
     if(evt.value == "active") {
-        state.zone_2 = state.zone_2 + 1
+      state.zone_2 = state.zone_2 + 1
+    }
+    else if(state.zone_1 <= 0 && evt.value == "inactive") {
+      reset()
     }
 }
 
