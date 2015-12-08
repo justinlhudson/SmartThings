@@ -23,6 +23,9 @@ def updated() {
     unschedule()
 
     initialize()
+    
+    // update on reset/restart
+    modeHandler([value: location.mode])
 }
 
 def modeHandler(evt)
@@ -35,8 +38,17 @@ def modeHandler(evt)
     }
 }
 
+def resetHandler(evt)
+{
+  updated()
+}
+
 private def initialize() {
-    subscribe(location, "mode", modeHandler)
+   subscribe(location, "mode", modeHandler)
+    
+  // HACK: keep alive
+  subscribe(location, "sunset", resetHandler)
+  subscribe(location, "sunrise", resetHandler)
 }
 
 private def switches_off() {

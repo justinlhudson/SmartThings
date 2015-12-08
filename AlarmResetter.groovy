@@ -23,6 +23,13 @@ def updated() {
     initialize()
 }
 
+def resetHandler(evt)
+{
+  if (state.flag == false) {
+    updated()
+  }
+}
+
 def alarms_strobe() {
     log.debug "alarms_strobe"
     def x = 3
@@ -78,6 +85,17 @@ def clear() {
 def alarmHandler(evt)
 {
     log.debug "${evt.value}"
+/*
+    if(settings.siren == true && settings.strobe == true){
+        settings.alarms*.both()
+    }
+    else if(settings.siren == true) {
+        settings.alarms*.siren()
+    }
+    else if(settings.strobe == true){
+        settings.alarms*.strobe()
+    }
+*/
     if( evt.value != "off" && state.flag == false) {
       state.flag = true
       if(evt.value == "strobe") {
@@ -95,4 +113,8 @@ def alarmHandler(evt)
 private def initialize() {
   state.flag = false
   subscribe(alarms, "alarm", alarmHandler)
+  
+   // HACK: keep alive
+  subscribe(location, "sunset", resetHandler)
+  subscribe(location, "sunrise", resetHandler)
 }
