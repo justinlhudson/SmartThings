@@ -92,9 +92,6 @@ def alarms_both() {
     }
 }
 
-
-
-
 def getRandom(int min, int max) {
   return Math.abs(new Random().nextInt() % max + min)
 }
