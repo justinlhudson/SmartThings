@@ -88,6 +88,10 @@ def clear() {
     sendNotificationEvent "Alarm(s) Reset..."
 }
 
+def stateUnLockHandle() {
+  state.lock = false
+}
+
 def alarmHandler(evt)
 {
     log.debug "${evt.value}"
@@ -113,6 +117,10 @@ def alarmHandler(evt)
 
       sendNotificationEvent "Alarm(s) Active!"
       runIn(settings.reset, clear, [overwrite: true])
+    }
+
+    if( state.lock == true ) {
+      runIn((settings.reset * 10), stateUnLockHandle, [overwrite: true]) // Incase get stuck!?!
     }
 }
 
