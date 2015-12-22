@@ -25,7 +25,7 @@ def updated() {
 
 def resetHandler(evt)
 {
-  if (state.flag == false) {
+  if (state.lock == false) {
     updated()
   }
 }
@@ -77,8 +77,14 @@ def alarms_off() {
 
 def clear() {
     log.debug "clear"
-    state.flag = false
     alarms_off()
+    settings.alarms.each {
+      if ( it != null && it.latestValue("alarm") != "off") {
+        runIn(1500, clear, [overwrite: false])
+        return
+      }
+    }
+    state.lock = false
     sendNotificationEvent "Alarm(s) Reset..."
 }
 
@@ -96,8 +102,8 @@ def alarmHandler(evt)
         settings.alarms*.strobe()
     }
 */
-    if( evt.value != "off" && state.flag == false) {
-      state.flag = true
+    if( evt.value != "off" && state.lock == false) {
+      state.lock = true
       if(evt.value == "strobe") {
         alarms_strobe()
       }
@@ -111,7 +117,7 @@ def alarmHandler(evt)
 }
 
 private def initialize() {
-  state.flag = false
+  state.lock = false
   subscribe(alarms, "alarm", alarmHandler)
   
    // HACK: keep alive
