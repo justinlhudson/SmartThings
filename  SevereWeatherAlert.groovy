@@ -114,57 +114,62 @@ def clear() {
 }
 
 def checkForSevereWeather() {
-  state.checking = true
-  def alerts
-  if(locationIsDefined()) {
-    if(zipcodeIsValid()) {
-      alerts = getWeatherFeature("alerts", zipcode)?.alerts
+  try {
+    state.checking = true
+    def alerts
+    if(locationIsDefined()) {
+      if(zipcodeIsValid()) {
+        alerts = getWeatherFeature("alerts", zipcode)?.alerts
+      } else {
+        log.warn "Severe Weather Alert: Invalid zipcode entered, defaulting to location's zipcode"
+        alerts = getWeatherFeature("alerts")?.alerts
+      }
     } else {
-      log.warn "Severe Weather Alert: Invalid zipcode entered, defaulting to location's zipcode"
-      alerts = getWeatherFeature("alerts")?.alerts
-    }
-  } else {
-    log.warn "Severe Weather Alert: Location is not defined"
-  }
-
-  //alerts = [ [type: "WRN"], [type: "TRN"] ]  //test
-
-  def newAlerts = alerts?.collect{it.type} ?: []
-  log.debug "newAlerts: $newAlerts"
-
-  def oldAlerts = state.lastAlerts ?: []
-  log.debug "oldAlerts: $oldAlerts"
-
-  if (newAlerts != oldAlerts) {
-    state.lastAlerts = newAlerts
-
-    def alertsFound = []  // changes from last iteration
-
-    // if a new alert is added to list
-    newAlerts.each { newAlert ->
-      if(!oldAlerts.contains(newAlert)) {
-        log.debug("alert")
-        alertsFound.add(newAlert)
-      }
+      log.warn "Severe Weather Alert: Location is not defined"
     }
 
-    // if more then one alert at same time (rare...)
-    alertsFound.each { alertFound ->
-      def alert = alerts.find { it.type == alertFound }
-        if(alert && alertFilter(alert.type)) {
-          def msg = "Weather Alert! ${alert.type} from ${alert.date} until ${alert.expires}"
+    //alerts = [ [type: "WRN"], [type: "TRN"] ]  //test
 
-          alarms_both()
+    def newAlerts = alerts?.collect{it.type} ?: []
+    log.debug "newAlerts: $newAlerts"
 
-          if (settings.clear && settings.clear > 0 ) {
-            runIn(settings.clear, clear, [overwrite: true])
+    def oldAlerts = state.lastAlerts ?: []
+    log.debug "oldAlerts: $oldAlerts"
+
+    if (newAlerts != oldAlerts) {
+      state.lastAlerts = newAlerts
+
+      def alertsFound = []  // changes from last iteration
+
+      // if a new alert is added to list
+      newAlerts.each { newAlert ->
+        if(!oldAlerts.contains(newAlert)) {
+          log.debug("alert")
+          alertsFound.add(newAlert)
         }
+      }
 
-        send(msg)
+      // if more then one alert at same time (rare...)
+      alertsFound.each { alertFound ->
+        def alert = alerts.find { it.type == alertFound }
+          if(alert && alertFilter(alert.type)) {
+            def msg = "Weather Alert! ${alert.type} from ${alert.date} until ${alert.expires}"
+
+            alarms_both()
+
+            if (settings.clear && settings.clear > 0 ) {
+              runIn(settings.clear, clear, [overwrite: true])
+          }
+
+          send(msg)
+        }
       }
     }
+  } catch (all) {
+    log.error "Something went horribly wrong!\n${all}"
+  } finally {
+    state.checking = false
   }
-  state.checking = false
 }
 
 def alertFilter(String type) {
