@@ -23,6 +23,10 @@ Example code for retrieving token for access into endpoint.
 
 Resets alarm if active in reset period with delay period before disarm.
 
+## ModeSwitchActivator
+
+When selected mode change occurs (e.g. home, away, night) then switch(es) are activated and in any other mode are deactivated.
+
 ## ModeLocker
 
 Monitors switches for on/active to determine if mode does not get changed during normal location cycles. Can use simulated switch for phone app or actual switch to lock "home" location for example.
