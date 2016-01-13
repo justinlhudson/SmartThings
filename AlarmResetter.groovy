@@ -1,3 +1,5 @@
+// Note: 20 sec (current cloud setting) timeout, watch the pause().
+
 definition(
   name: "Alarm Resetter",
   namespace: "Operations",
@@ -10,7 +12,7 @@ definition(
 preferences {
   section("Alarming...") {
     input "alarms", "capability.alarm", title:"Reset alarms", multiple:true, required:true
-    input "reset", "number", title:"Reset (seconds)", defaultValue:30
+    input "reset", "number", title:"Reset (seconds)", defaultValue:15
   }
 }
 
@@ -33,7 +35,7 @@ def resetHandler(evt)
 def alarms_strobe() {
   try {
     log.debug "alarms_strobe"
-    def x = 3
+    def x = 6
     x.times { n ->
       settings.alarms.each {
         if ( it != null && it.latestValue("alarm") != "strobe") {
@@ -41,7 +43,7 @@ def alarms_strobe() {
         }
       }
       if( n > 0) {
-        pause(3000)
+        pause(1500)
       }
     } 
   }
@@ -89,67 +91,61 @@ def alarms_off() {
   catch (all) {
     log.error "Something went horribly wrong!\n${all}"
   }
+  // cloud says alarm is off, but still hear in house (tell it again before crying)
+  // Note: change state to force cloud to update!
+  try {
+    alarms*.strobe()  // no noise
+    pause(3000)
+    alarms*.off()
+  }
+  catch (all) {
+    log.error "Something went horribly wrong!\n${all}"
+  }
 }
 
 def clear() {
   log.debug "clear"
-  alarms_off()
+  state.lock = false  // rather reset at end of function, but incase things go to poo as they have in the past...
+
+  alarms_off()  
+  // last ditch effort, keep calling clear until really cleared (no timeout since schedualed)
   try {
     settings.alarms.each {
       if ( it != null && it.latestValue("alarm") != "off") {
+        log.debug "wtf"
         runIn(1500, clear, [overwrite: false])
         return
       }
-    }
-    } catch (all) {
-      log.error "Something went horribly wrong!\n${all}"
-    }
-
-    state.lock = false
-    sendNotificationEvent "Alarm(s) Reset..."
+  }
+  } catch (all) {
+    log.error "Something went horribly wrong!\n${all}"
   }
 
-  def stateUnLockHandle() {
-    state.lock = false
+    sendNotificationEvent "Alarm(s) Reset..."
   }
 
   def alarmHandler(evt)
   {
     log.debug "${evt.value}"
-/*
-  if(settings.siren == true && settings.strobe == true){
-      settings.alarms*.both()
-  }
-  else if(settings.siren == true) {
-      settings.alarms*.siren()
-  }
-  else if(settings.strobe == true){
-      settings.alarms*.strobe()
-  }
-  */
-  if( evt.value != "off" && state.lock == false) {
-    state.lock = true
-    if(evt.value == "strobe") {
-      alarms_strobe()
-    }
-    else {
-      alarms_both()
-    }
+    if( evt.value != "off" && state.lock == false) {
+      state.lock = true
+      if(evt.value == "strobe") {
+        alarms_strobe()
+      }
+      else {
+        alarms_both()
+      }
 
-    sendNotificationEvent "Alarm(s) Active!"
-    runIn(settings.reset, clear, [overwrite: true])
+      sendNotificationEvent "Alarm(s) Active!"
+      runIn(settings.reset, clear, [overwrite: true])
+    }
   }
-
-  if( state.lock == true ) {
-    runIn((settings.reset * 10), stateUnLockHandle, [overwrite: true]) // Incase get stuck!?!
-  }
-}
 
 private def initialize() {
   state.lock = false
   subscribe(alarms, "alarm", alarmHandler)
 
- // HACK: keep alive
- subscribe(location, "sunset", resetHandler)
- subscribe(location, "sunrise", resetHandler)
+  // HACK: keep alive
+  subscribe(location, "sunset", resetHandler)
+  subscribe(location, "sunrise", resetHandler)
 }
