@@ -91,16 +91,6 @@ def alarms_off() {
   catch (all) {
     log.error "Something went horribly wrong!\n${all}"
   }
-  // cloud says alarm is off, but still hear in house (tell it again before crying)
-  // Note: change state to force cloud to update!
-  try {
-    alarms*.strobe()  // no noise
-    pause(3000)
-    alarms*.off()
-  }
-  catch (all) {
-    log.error "Something went horribly wrong!\n${all}"
-  }
 }
 
 def clear() {
