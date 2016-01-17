@@ -50,6 +50,12 @@ def alarms_strobe() {
       pause(1500)
     }
   }
+  try {
+    settings.alarms*.strobe()
+  }
+  catch (all) {
+    log.error "Something went horribly wrong!\n${all}"
+  }
 }
 
 def alarms_both() {
@@ -70,6 +76,12 @@ def alarms_both() {
       pause(1500)
     }
   }
+  try {
+    settings.alarms*.both()
+  }
+  catch (all) {
+    log.error "Something went horribly wrong!\n${all}"
+  }
 }
 
 def alarms_off() {
@@ -89,6 +101,12 @@ def alarms_off() {
     if( n > 0) {
       pause(1500)
     }
+  }
+  try {
+    settings.alarms*.off()
+  }
+  catch (all) {
+    log.error "Something went horribly wrong!\n${all}"
   }
 }
 
