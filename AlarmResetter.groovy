@@ -33,63 +33,62 @@ def resetHandler(evt)
 }
 
 def alarms_strobe() {
-  try {
-    log.debug "alarms_strobe"
-    def x = 6
-    x.times { n ->
+  log.debug "alarms_strobe"
+  def x = 3
+  x.times { n ->
+    try {
       settings.alarms.each {
         if ( it != null && it.latestValue("alarm") != "strobe") {
           it.strobe()
         }
       }
-      if( n > 0) {
-        pause(1500)
-      }
-    } 
-  }
-  catch (all) {
-    log.error "Something went horribly wrong!\n${all}"
+    }
+    catch (all) {
+      log.error "Something went horribly wrong!\n${all}"
+    }
+    if( n > 0) {
+      pause(1500)
+    }
   }
 }
 
 def alarms_both() {
-  try {
-    log.debug "alarms_both"
-    def x = 6
-    x.times { n ->
+  log.debug "alarms_both"
+  def x = 3
+  x.times { n ->
+    try {
       settings.alarms.each {
         if ( it != null && it.latestValue("alarm") != "both") {
           it.both()
         }
       }
-      if( n > 0) {
-        pause(1500)
-      }
-    } 
-  }
-  catch (all) {
-    log.error "Something went horribly wrong!\n${all}"
+    }
+    catch (all) {
+      log.error "Something went horribly wrong!\n${all}"
+    }
+    if( n > 0) {
+      pause(1500)
+    }
   }
 }
 
-
 def alarms_off() {
-  try {
-    log.debug "alarms_off"
-    def x = 6
-    x.times { n ->
+  log.debug "alarms_strobe"
+  def x = 3
+  x.times { n ->
+    try {
       settings.alarms.each {
         if ( it != null && it.latestValue("alarm") != "off") {
           it.off()
         }
       }
-      if ( n > 0 ) {
-        pause(1500)
-      }
     }
-  }
-  catch (all) {
-    log.error "Something went horribly wrong!\n${all}"
+    catch (all) {
+      log.error "Something went horribly wrong!\n${all}"
+    }
+    if( n > 0) {
+      pause(1500)
+    }
   }
 }
 
@@ -97,13 +96,13 @@ def clear() {
   log.debug "clear"
   state.lock = false  // rather reset at end of function, but incase things go to poo as they have in the past...
 
-  alarms_off()  
+  alarms_off()
   // last ditch effort, keep calling clear until really cleared (no timeout since schedualed)
   try {
     settings.alarms.each {
       if ( it != null && it.latestValue("alarm") != "off") {
         log.debug "wtf"
-        runIn(1500, clear, [overwrite: false])
+        runIn(5000, clear, [overwrite: true])
         return
       }
   }
@@ -133,6 +132,8 @@ def clear() {
 
 private def initialize() {
   state.lock = false
+  state.cycle = true
+
   subscribe(alarms, "alarm", alarmHandler)
 
   // HACK: keep alive

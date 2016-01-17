@@ -62,42 +62,64 @@ def init() {
   subscribe(location, "sunrise", resetHandler)
 }
 
-def alarms_off() {
-  try {
-    log.debug "alarms_off"
-    def x = 6
-    x.times { n ->
+def alarms_strobe() {
+  log.debug "alarms_strobe"
+  def x = 3
+  x.times { n ->
+    try {
       settings.alarms.each {
-        if ( it != null && it.latestValue("alarm") != "off") {
-          it.off()
+        if ( it != null && it.latestValue("alarm") != "strobe") {
+          it.strobe()
         }
       }
-      if( n > 0) {
-        pause(1500)
-      }
     }
-    } catch (all) {
+    catch (all) {
       log.error "Something went horribly wrong!\n${all}"
     }
+    if( n > 0) {
+      pause(1500)
+    }
+  }
 }
 
 def alarms_both() {
-  try {
-    log.debug "alarms_both"
-    def x = 6
-    x.times { n ->
+  log.debug "alarms_both"
+  def x = 18
+  x.times { n ->
+    try {
       settings.alarms.each {
         if ( it != null && it.latestValue("alarm") != "both") {
           it.both()
         }
       }
-      if( n > 0) {
-        pause(1500)
-      }
     }
-    } catch (all) {
+    catch (all) {
       log.error "Something went horribly wrong!\n${all}"
     }
+    if( n > 0) {
+      pause(500)
+    }
+  }
+}
+
+def alarms_off() {
+  log.debug "alarms_strobe"
+  def x = 3
+  x.times { n ->
+    try {
+      settings.alarms.each {
+        if ( it != null && it.latestValue("alarm") != "off") {
+          it.off()
+        }
+      }
+    }
+    catch (all) {
+      log.error "Something went horribly wrong!\n${all}"
+    }
+    if( n > 0) {
+      pause(1500)
+    }
+  }
 }
 
 def getRandom(int min, int max) {
