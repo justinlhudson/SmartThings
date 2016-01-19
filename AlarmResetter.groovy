@@ -50,12 +50,6 @@ def alarms_strobe() {
       pause(1500)
     }
   }
-  try {
-    settings.alarms*.strobe()
-  }
-  catch (all) {
-    log.error "Something went horribly wrong!\n${all}"
-  }
 }
 
 def alarms_both() {
@@ -75,12 +69,6 @@ def alarms_both() {
     if( n > 0) {
       pause(1500)
     }
-  }
-  try {
-    settings.alarms*.both()
-  }
-  catch (all) {
-    log.error "Something went horribly wrong!\n${all}"
   }
 }
 
@@ -102,12 +90,6 @@ def alarms_off() {
       pause(1500)
     }
   }
-  try {
-    settings.alarms*.off()
-  }
-  catch (all) {
-    log.error "Something went horribly wrong!\n${all}"
-  }
 }
 
 def clear() {
@@ -120,7 +102,10 @@ def clear() {
     settings.alarms.each {
       if ( it != null && it.latestValue("alarm") != "off") {
         log.debug "wtf"
-        runIn(5000, clear, [overwrite: true])
+        state.cycle = state.cycle + 1
+        if (state.cycle <= 3) {
+          runIn(5000, clear, [overwrite: true])
+        }
         return
       }
   }
@@ -150,7 +135,7 @@ def clear() {
 
 private def initialize() {
   state.lock = false
-  state.cycle = true
+  state.cycle = 0
 
   subscribe(alarms, "alarm", alarmHandler)
 
