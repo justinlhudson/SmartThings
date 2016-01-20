@@ -136,12 +136,13 @@ def alarmHandler(evt)
     
     // Throwing un handled exception?  but yet still runs...
     // try a few then cross fingers actually worked. WT...?!?!
-    def x = 3
+    def x = 3 * 4
     x.times { n ->
       try {
         runIn(settings.reset, clear, [overwrite: true])
         return
       } catch (all) {
+        pause(250)
         // EAT IT!
         //log.error "Something went horribly wrong!\n${all}"        
       }      
