@@ -73,7 +73,7 @@ def alarms_both() {
 }
 
 def alarms_off() {
-  log.debug "alarms_strobe"
+  log.debug "alarms_off"
   def x = 3
   x.times { n ->
     try {
@@ -94,44 +94,69 @@ def alarms_off() {
 
 def clear() {
   log.debug "clear"
-  state.lock = false  // rather reset at end of function, but incase things go to poo as they have in the past...
-
+ 
   alarms_off()
   // last ditch effort, keep calling clear until really cleared (no timeout since schedualed)
   try {
     settings.alarms.each {
       if ( it != null && it.latestValue("alarm") != "off") {
-        log.debug "wtf"
+        log.debug "wt..."
         state.cycle = state.cycle + 1
-        if (state.cycle <= 3) {
-          runIn(5000, clear, [overwrite: true])
+        if (state.cycle >= 3) {
+          state.cycle = 0
+          return          
         }
-        return
+        runIn(5000, clear, [overwrite: true])        
       }
   }
   } catch (all) {
     log.error "Something went horribly wrong!\n${all}"
   }
 
-    sendNotificationEvent "Alarm(s) Reset..."
-  }
+  state.lock = false
+  log.debug "unlocked"
 
-  def alarmHandler(evt)
-  {
-    log.debug "${evt.value}"
-    if( evt.value != "off" && state.lock == false) {
-      state.lock = true
-      if(evt.value == "strobe") {
-        alarms_strobe()
-      }
-      else {
-        alarms_both()
-      }
+  notify("Alarm(s) Reset...")
+}
 
-      sendNotificationEvent "Alarm(s) Active!"
-      runIn(settings.reset, clear, [overwrite: true])
+def alarmHandler(evt)
+{
+  log.debug "${evt.value}"
+  if( evt.value != "off" && state.lock == false) {
+    state.lock = true
+    log.debug "locked"
+    if(evt.value == "strobe") {
+      alarms_strobe()
     }
+    else {
+      alarms_both()
+    }
+
+    notify("Alarm(s) Active!")
+    
+    // Throwing un handled exception?  but yet still runs...
+    // try a few then cross fingers actually worked. WT...?!?!
+    def x = 3
+    x.times { n ->
+      try {
+        runIn(settings.reset, clear, [overwrite: true])
+        return
+      } catch (all) {
+        // EAT IT!
+        //log.error "Something went horribly wrong!\n${all}"        
+      }      
+    }
+
   }
+}
+
+private def notify(message) {
+  try {
+    sendNotificationEvent(message)
+  } catch (all) {
+    log.error "Something went horribly wrong!\n${all}"
+  }
+}
 
 private def initialize() {
   state.lock = false
