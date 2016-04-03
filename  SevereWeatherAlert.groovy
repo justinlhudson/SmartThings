@@ -33,6 +33,7 @@ preferences {
     input "zipcode", "text", title: "Zip Code", required: false
     // http://www.wunderground.com/weather/api/d/docs?d=data/alerts
     input "filters", "text", title: "Filter Alerts (x,x,...)", required: false, defaultValue:"TOW,SEW,WAT,FLO,FOG,SPE"
+    input "skipfilters", bool, title: "Still text (skip filters)?", required: false, defaultValue:false
   }
 }
 
@@ -174,16 +175,21 @@ def checkForSevereWeather() {
       // if more then one alert at same time (rare...)
       alertsFound.each { alertFound ->
         def alert = alerts.find { it.type == alertFound }
-          if(alert && alertFilter(alert.type)) {
+        if( alert ) {
+          if( alertFilter(alert.type) ) {
             def msg = "Weather Alert! ${alert.type} from ${alert.date} until ${alert.expires}"
 
             alarms_both()
 
             if (settings.clear && settings.clear > 0 ) {
               runIn(settings.clear, clear, [overwrite: true])
-          }
+            }
 
-          send(msg)
+            send(msg)
+          } 
+          else if( settings.skipfilters ) {
+            send(msg)
+          }
         }
       }
     }
