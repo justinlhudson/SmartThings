@@ -3,7 +3,9 @@ SmartThings Development
 
 ## SevereWeatherAlert
 
-Alarm, text, and push notification on changes in weather alert(s). Allows filtering for ignore list of alert(s) as well as alarm auto shut off.
+Alarm, text, and push notification on changes in weather alert(s). Allows filtering for ignore list of alert(s) as well as alarm auto shut off.  
+
+Note: This could have been setup to alert when message changed rather then type of alert, but sometimes same alert they seem to change often and not want alarm all night long (I like to sleep).  
 
 ## DeviceEndpoints
 
