@@ -59,9 +59,16 @@ def init() {
   checkForSevereWeather()
   runEvery5Minutes("checkForSevereWeather")
 
+  subscribe(app, appTouch)
+
   // HACK: keep alive
   subscribe(location, "sunset", resetHandler)
   subscribe(location, "sunrise", resetHandler)
+}
+
+def appTouch(evt)
+{
+  clear()
 }
 
 private silentAlarm()
