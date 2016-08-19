@@ -27,6 +27,7 @@ preferences {
   }
   section ("Activate alarms...") {
     input "alarms", "capability.alarm", title:"Alarms", multiple:true, required:false
+    input "silent", "enum", options: ["Yes","No"], title: "Silent alarm only (Yes/No), i.e. strobe"
     input "clear", "number", title:"Active (seconds)", defaultValue:0
   }
   section ("Options...") {
@@ -61,6 +62,11 @@ def init() {
   // HACK: keep alive
   subscribe(location, "sunset", resetHandler)
   subscribe(location, "sunrise", resetHandler)
+}
+
+private silentAlarm()
+{
+  silent?.toLowerCase() in ["yes","true","y"]
 }
 
 def alarms_strobe() {
@@ -133,7 +139,7 @@ def resetHandler(evt)
 }
 
 def clear() {
-    alarms_off()
+  alarms_off()
 }
 
 def checkForSevereWeather() {
@@ -179,7 +185,13 @@ def checkForSevereWeather() {
           if( alertFilter(alert.type) ) {
             def msg = "Weather Alert! ${alert.type} from ${alert.date} until ${alert.expires}"
 
-            alarms_both()
+            if (silentAlarm()) {
+              log.debug "Silent alarm only"
+              alarms_strobe()
+            }
+            else {
+              alarms_both()
+            }
 
             if (settings.clear && settings.clear > 0 ) {
               runIn(settings.clear, clear, [overwrite: true])
