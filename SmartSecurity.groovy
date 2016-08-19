@@ -42,7 +42,7 @@ preferences {
     input "lights", "capability.switch", title: "Flash lights", multiple: true, required: false
     input "switches", "capability.switch", title: "Turn switches on", required: false, multiple: true
     input "newMode", "mode", title: "Change to this mode", required: false
-    input "clear", "number", title:"Active (seconds)", defaultValue:0
+    input "clear", "number", title:"Alerts off (seconds)", defaultValue:0
   }
   section("Notify others (optional)") {
     input "textMessage", "text", title: "Send this message", multiple: false, required: false
@@ -66,7 +66,7 @@ def updated() {
   log.debug "UPDATED"
 
   init()
-  runIn(10, init, [overwrite: true])
+  //runIn(10, init, [overwrite: true])
 }
 
 def init() {
@@ -74,43 +74,14 @@ def init() {
   unschedule()
 
   subscribeToEvents()
+
   state.alarmActive = null
   state.residentsAreUp = null
   state.lastIntruderMotion = null
 
-  //clear()
+  //reset()
 
   state.check = true
-}
-
-private def switches_on() {
-    log.debug "switches_on"
-    def x = 6
-    x.times { n ->
-      settings.switches.each {
-        if ( it != null && it.currentSwitch != "on") {
-          it.on()
-        }
-      }
-      if( n > 0) {
-        pause(500)
-      }
-    }
-}
-
-private def switches_off() {
-    log.debug "switches_off"
-    def x = 6
-    x.times { n ->
-      settings.switches.each {
-        if ( it != null && it.currentSwitch != "off") {
-          it.on()
-        }
-      }
-      if( n > 0) {
-        pause(500)
-      }
-    }
 }
 
 private subscribeToEvents()
@@ -121,6 +92,32 @@ private subscribeToEvents()
   subscribe intrusionContacts, "contact", contact
   subscribe alarms, "alarm", alarm
   subscribe(app, appTouch)
+}
+
+private def switches_on() {
+    log.debug "switches_on"
+    def x = 6
+    x.times { n ->
+      settings.switches.each {
+        if ( it != null && it.currentSwitch != "on") {
+          it.on()
+          runIn(1, switches_on, [overwrite: true])
+        }
+      }
+    }
+}
+
+private def switches_off() {
+    log.debug "switches_off"
+    def x = 6
+    x.times { n ->
+      settings.switches.each {
+        if ( it != null && it.currentSwitch != "off") {
+          it.off()
+          runIn(1, switches_off, [overwrite: true])
+        }
+      }
+    }
 }
 
 def modeHandler(evt)
@@ -167,54 +164,48 @@ def alarms_strobe() {
       settings.alarms.each {
         if ( it != null && it.latestValue("alarm") != "strobe") {
           it.strobe()
+          runIn(1, alarms_strobe, [overwrite: true])
         }
       }
     }
     catch (all) {
       log.error "Something went horribly wrong!\n${all}"
-    }
-    if( n > 0) {
-      pause(1500)
     }
   }
 }
 
 def alarms_both() {
   log.debug "alarms_both"
-  def x = 18
+  def x = 12
   x.times { n ->
     try {
       settings.alarms.each {
         if ( it != null && it.latestValue("alarm") != "both") {
           it.both()
+          runIn(1, alarms_both, [overwrite: true])
         }
       }
     }
     catch (all) {
       log.error "Something went horribly wrong!\n${all}"
     }
-    if( n > 0) {
-      pause(500)
-    }
   }
 }
 
 def alarms_off() {
-  log.debug "alarms_strobe"
+  log.debug "alarms_off"
   def x = 3
   x.times { n ->
     try {
       settings.alarms.each {
         if ( it != null && it.latestValue("alarm") != "off") {
           it.off()
+          runIn(1, alarms_off, [overwrite: true])
         }
       }
     }
     catch (all) {
       log.error "Something went horribly wrong!\n${all}"
-    }
-    if( n > 0) {
-      pause(1500)
     }
   }
 }
@@ -226,7 +217,7 @@ private isResidentMotionSensor(evt)
 
 def appTouch(evt)
 {
-  clear()
+  reset()
 }
 
 // Here to handle old subscriptions
@@ -267,10 +258,12 @@ def intruderMotion(evt)
         log.trace "calling startAlarmSequence"
         startAlarmSequence()
       }
+      /*
       else {
         log.trace "calling disarmIntrusionDetection"
         disarmIntrusionDetection()
       }
+      */
     }
   }
   state.lastIntruderMotion = now()
@@ -298,9 +291,11 @@ def contact(evt)
       if (residentsHaveBeenQuiet()) {
         startAlarmSequence()
       }
+      /*
       else {
         disarmIntrusionDetection()
       }
+      */
     }
   }
 }
@@ -309,10 +304,11 @@ def alarm(evt)
 {
   log.debug "$evt.name: $evt.value"
   if (evt.value == "off") {
-    clear()
+    reset()
   }
 }
 
+/*
 private disarmIntrusionDetection()
 {
   log.debug "residents are up, disarming intrusion detection"
@@ -347,6 +343,7 @@ def checkForReArm()
     log.warn "checkForReArm: lastIntruderMotion was null, unable to check for re-arming intrusion detection"
   } 
 }
+*/
 
 private startAlarmSequence()
 {
@@ -374,6 +371,12 @@ private startAlarmSequence()
         }
     }
 
+    // Note: at end of sequence (for reset)!
+    if (newMode) {
+      setLocationMode(newMode)
+      log.trace "mode changed..."
+    }
+
     if (silentAlarm()) {
       log.debug "Silent alarm only"
       alarms_strobe()
@@ -392,31 +395,35 @@ private startAlarmSequence()
       //}
     }
 
+    log.trace "alarms going..."
+
     if(switches) {
       switches_on()
+      log.trace "switches on..."
     }
 
     if (lights) {
       flashLights(Math.min((seconds/2) as Integer, 10))
-    }
-
-    // Note: at end of sequence (for reset)!
-    if (newMode) {
-      setLocationMode(newMode)
+      log.trace "lights flashing..."
     }
 
     if (settings.clear && settings.clear > 0 ) {
-      runIn(settings.clear, clear, [overwrite: true])
+      //def now = new Date()
+     // def runTime = new Date(now.getTime() + (settings.clear * 1000))
+      runIn(settings.clear, reset, [overwrite: true])
+      log.trace "reset started..."
     }
+
   }
 }
 
-def clear() {
+def reset() {
     state.alarmActive = false
     alarms_off()
     switches_off()
 }
 
+/*
 def continueFlashing()
 {
   unschedule()
@@ -425,6 +432,7 @@ def continueFlashing()
     schedule(util.cronExpression(now() + 10000), "continueFlashing")
   }
 }
+*/
 
 private flashLights(numFlashes) {
   def onFor = 1000
