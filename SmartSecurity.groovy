@@ -39,7 +39,7 @@ preferences {
     input "alarms", "capability.alarm", title: "Which Alarm(s)", multiple: true, required: false
     input "silent", "enum", options: ["Yes","No"], title: "Silent alarm only (Yes/No), i.e. strobe"
     //input "seconds", "number", title: "Delay in seconds before siren sounds"
-    input "lights", "capability.switch", title: "Flash lights)", multiple: true, required: false
+    input "lights", "capability.switch", title: "Flash lights", multiple: true, required: false
     input "switches", "capability.switch", title: "Turn switches on", required: false, multiple: true
     input "newMode", "mode", title: "Change to this mode", required: false
     input "clear", "number", title:"Active (seconds)", defaultValue:0
