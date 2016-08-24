@@ -84,30 +84,34 @@ def alarms_strobe() {
       settings.alarms.each {
         if ( it != null && it.latestValue("alarm") != "strobe") {
           it.strobe()
-          runIn(1, alarms_strobe, [overwrite: true])
         }
       }
     }
     catch (all) {
       log.error "Something went horribly wrong!\n${all}"
+    }
+    if( n > 0) {
+      pause(1500)
     }
   }
 }
 
 def alarms_both() {
   log.debug "alarms_both"
-  def x = 12
+  def x = 3
   x.times { n ->
     try {
       settings.alarms.each {
         if ( it != null && it.latestValue("alarm") != "both") {
           it.both()
-          runIn(1, alarms_both, [overwrite: true])
         }
       }
     }
     catch (all) {
       log.error "Something went horribly wrong!\n${all}"
+    }
+    if( n > 0) {
+      pause(1500)
     }
   }
 }
@@ -120,12 +124,14 @@ def alarms_off() {
       settings.alarms.each {
         if ( it != null && it.latestValue("alarm") != "off") {
           it.off()
-          runIn(1, alarms_off, [overwrite: true])
         }
       }
     }
     catch (all) {
       log.error "Something went horribly wrong!\n${all}"
+    }
+    if( n > 0) {
+      pause(1500)
     }
   }
 }
