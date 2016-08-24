@@ -11,7 +11,7 @@ definition(
 
 preferences {
   section("Alarming...") {
-    input "alarms", "capability.alarm", title:"Reset alarms", multiple:true, required:true
+    input "alarms", "capability.alarm", title:"Reset alarms", multiple:true, required:false
     input "reset", "number", title:"Reset (seconds)", defaultValue:15
   }
 }
@@ -78,9 +78,9 @@ def alarms_off() {
   x.times { n ->
     try {
       settings.alarms.each {
-        if ( it != null && it.latestValue("alarm") != "off") {
+        //if ( it != null && it.latestValue("alarm") != "off") {
           it.off()
-        }
+        //}
       }
     }
     catch (all) {
@@ -90,6 +90,11 @@ def alarms_off() {
       pause(1500)
     }
   }
+}
+
+def appTouch(evt)
+{
+  clear()
 }
 
 def clear() {
@@ -164,6 +169,7 @@ private def initialize() {
   state.cycle = 0
 
   subscribe(alarms, "alarm", alarmHandler)
+  subscribe(app, appTouch)
 
   // HACK: keep alive
   subscribe(location, "sunset", resetHandler)

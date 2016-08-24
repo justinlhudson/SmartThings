@@ -94,30 +94,44 @@ private subscribeToEvents()
   subscribe(app, appTouch)
 }
 
+private def switches_off() {
+  log.debug "switches_off"
+  def x = 12
+  x.times { n ->
+    try {
+      settings.switches.each {
+        //if ( it != null && it.currentSwitch != "off") {
+          it.off()
+        //}
+      }
+    }
+    catch (all) {
+      log.error "Something went horribly wrong!\n${all}"
+    }
+    if( n > 0) {
+      pause(500)
+    }
+  }
+}
+
 private def switches_on() {
-    log.debug "switches_on"
-    def x = 6
-    x.times { n ->
+  log.debug "switches_on"
+  def x = 6
+  x.times { n ->
+    try {
       settings.switches.each {
         if ( it != null && it.currentSwitch != "on") {
           it.on()
-          runIn(1, switches_on, [overwrite: true])
         }
       }
     }
-}
-
-private def switches_off() {
-    log.debug "switches_off"
-    def x = 6
-    x.times { n ->
-      settings.switches.each {
-        if ( it != null && it.currentSwitch != "off") {
-          it.off()
-          runIn(1, switches_off, [overwrite: true])
-        }
-      }
+    catch (all) {
+      log.error "Something went horribly wrong!\n${all}"
     }
+    if( n > 0) {
+      pause(1500)
+    }
+  }
 }
 
 def modeHandler(evt)
@@ -202,9 +216,9 @@ def alarms_off() {
   x.times { n ->
     try {
       settings.alarms.each {
-        if ( it != null && it.latestValue("alarm") != "off") {
+        //if ( it != null && it.latestValue("alarm") != "off") {
           it.off()
-        }
+        //}
       }
     }
     catch (all) {
@@ -424,9 +438,10 @@ private startAlarmSequence()
 }
 
 def reset() {
-    state.alarmActive = false
-    alarms_off()
-    switches_off()
+  log.trace "reset..."
+  state.alarmActive = false
+  alarms_off()
+  switches_off()
 }
 
 /*

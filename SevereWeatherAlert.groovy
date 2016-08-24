@@ -122,9 +122,9 @@ def alarms_off() {
   x.times { n ->
     try {
       settings.alarms.each {
-        if ( it != null && it.latestValue("alarm") != "off") {
+        //if ( it != null && it.latestValue("alarm") != "off") {
           it.off()
-        }
+        //}
       }
     }
     catch (all) {
