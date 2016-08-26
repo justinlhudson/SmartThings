@@ -96,7 +96,7 @@ private subscribeToEvents()
 
 private def switches_off() {
   log.debug "switches_off"
-  def x = 12
+  def x = 3
   x.times { n ->
     try {
       settings.switches.each {
@@ -109,14 +109,14 @@ private def switches_off() {
       log.error "Something went horribly wrong!\n${all}"
     }
     if( n > 0) {
-      pause(500)
+      pause(1500)
     }
   }
 }
 
 private def switches_on() {
   log.debug "switches_on"
-  def x = 6
+  def x = 3
   x.times { n ->
     try {
       settings.switches.each {
