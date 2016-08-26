@@ -107,11 +107,11 @@ def clear() {
       if ( it != null && it.latestValue("alarm") != "off") {
         log.debug "wt..."
         state.cycle = state.cycle + 1
-        if (state.cycle >= 3) {
+        if (state.cycle > 3) {
           state.cycle = 0
-          return          
+          return
         }
-        runIn(5000, clear, [overwrite: true])        
+        runIn(15, clear, [overwrite: true])
       }
   }
   } catch (all) {
