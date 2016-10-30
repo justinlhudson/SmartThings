@@ -12,6 +12,7 @@ definition(
 preferences {
   section("Alarming...") {
     input "alarms", "capability.alarm", title:"Reset alarms", multiple:true, required:false
+    input "switches", "capability.switch", title: "Turn switches on", required: false, multiple: true
     input "reset", "number", title:"Reset (seconds)", defaultValue:15
   }
 }
@@ -32,65 +33,6 @@ def resetHandler(evt)
   }
 }
 
-def alarms_strobe() {
-  log.debug "alarms_strobe"
-  def x = 3
-  x.times { n ->
-    try {
-      settings.alarms.each {
-        if ( it != null && it.latestValue("alarm") != "strobe") {
-          it.strobe()
-        }
-      }
-    }
-    catch (all) {
-      log.error "Something went horribly wrong!\n${all}"
-    }
-    if( n > 0) {
-      pause(1500)
-    }
-  }
-}
-
-def alarms_both() {
-  log.debug "alarms_both"
-  def x = 3
-  x.times { n ->
-    try {
-      settings.alarms.each {
-        if ( it != null && it.latestValue("alarm") != "both") {
-          it.both()
-        }
-      }
-    }
-    catch (all) {
-      log.error "Something went horribly wrong!\n${all}"
-    }
-    if( n > 0) {
-      pause(1500)
-    }
-  }
-}
-
-def alarms_off() {
-  log.debug "alarms_off"
-  def x = 3
-  x.times { n ->
-    try {
-      settings.alarms.each {
-        //if ( it != null && it.latestValue("alarm") != "off") {
-          it.off()
-        //}
-      }
-    }
-    catch (all) {
-      log.error "Something went horribly wrong!\n${all}"
-    }
-    if( n > 0) {
-      pause(1500)
-    }
-  }
-}
 
 def appTouch(evt)
 {
@@ -101,22 +43,7 @@ def clear() {
   log.debug "clear"
  
   alarms_off()
-  // last ditch effort, keep calling clear until really cleared (no timeout since schedualed)
-  try {
-    settings.alarms.each {
-      if ( it != null && it.latestValue("alarm") != "off") {
-        log.debug "wt..."
-        state.cycle = state.cycle + 1
-        if (state.cycle > 3) {
-          state.cycle = 0
-          return
-        }
-        runIn(15, clear, [overwrite: true])
-      }
-  }
-  } catch (all) {
-    log.error "Something went horribly wrong!\n${all}"
-  }
+  switches_off()
 
   state.lock = false
   log.debug "unlocked"
@@ -127,15 +54,9 @@ def clear() {
 def alarmHandler(evt)
 {
   log.debug "${evt.value}"
-  if( evt.value != "off" && state.lock == false) {
+  if( state.lock == false) {
     state.lock = true
     log.debug "locked"
-    if(evt.value == "strobe") {
-      alarms_strobe()
-    }
-    else {
-      alarms_both()
-    }
 
     notify("Alarm(s) Active!")
     
@@ -156,6 +77,46 @@ def alarmHandler(evt)
   }
 }
 
+private def alarms_off() {
+  log.debug "alarms_off"
+  def x = 3
+  x.times { n ->
+    try {
+      settings.alarms.each {
+        //if ( it != null && it.latestValue("alarm") != "off") {
+          it.off()
+        //}
+      }
+    }
+    catch (all) {
+      log.error "Something went horribly wrong!\n${all}"
+    }
+    if( n > 0) {
+      pause(1500)
+    }
+  }
+}
+
+private def switches_off() {
+  log.debug "switches_off"
+  def x = 3
+  x.times { n ->
+    try {
+      settings.switches.each {
+        //if ( it != null && it.currentSwitch != "off") {
+          it.off()
+        //}
+      }
+    }
+    catch (all) {
+      log.error "Something went horribly wrong!\n${all}"
+    }
+    if( n > 0) {
+      pause(1500)
+    }
+  }
+}
+
 private def notify(message) {
   try {
     sendNotificationEvent(message)
@@ -168,6 +129,7 @@ private def initialize() {
   state.lock = false
   state.cycle = 0
 
+  subscribe(switches, "switch.on", alarmHandler)
   subscribe(alarms, "alarm", alarmHandler)
   subscribe(app, appTouch)
 
