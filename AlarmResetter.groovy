@@ -12,7 +12,8 @@ definition(
 preferences {
   section("Alarming...") {
     input "alarms", "capability.alarm", title:"Reset alarms", multiple:true, required:false
-    input "switches", "capability.switch", title: "Turn switches on", required: false, multiple: true
+    input "switches_reset", "capability.switch", title: "Reset switches", required: false, multiple: true
+    input "switches_off", "capability.switch", title: "Off switches", required: false, multiple: true
     input "reset", "number", title:"Reset (seconds)", defaultValue:15
   }
 }
@@ -39,7 +40,7 @@ def appTouch(evt)
   clear()
 }
 
-def clear() {
+def clear(evt) {
   log.debug "clear"
  
   alarms_off()
@@ -102,7 +103,7 @@ private def switches_off() {
   def x = 3
   x.times { n ->
     try {
-      settings.switches.each {
+      settings.switches_reset.each {
         //if ( it != null && it.currentSwitch != "off") {
           it.off()
         //}
@@ -129,7 +130,8 @@ private def initialize() {
   state.lock = false
   state.cycle = 0
 
-  subscribe(switches, "switch.on", alarmHandler)
+  subscribe(switches_off, "switch", clear)
+  subscribe(switches_reset, "switch.on", alarmHandler)
   subscribe(alarms, "alarm", alarmHandler)
   subscribe(app, appTouch)
 
