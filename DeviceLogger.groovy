@@ -1,3 +1,5 @@
+import groovy.json.JsonBuilder
+
 definition (
     name: "Device Logger",
     namespace: "Operations",
@@ -96,13 +98,32 @@ private logField(type, evt, Closure c) {
     def value = c(evt.value)
 
     log.debug "Logging: ${name}, ${type}, ${value}"
+
+    def method = "POST"
+
+    def headers = [:] 
+    headers.put("HOST", getHostAddress())
+    headers.put("Content-Type", "application/json")
+
+    def json = new JsonBuilder()
+    json.call("type":"${type}","name":"${name}","value":"${value}")
+
     def result = new physicalgraph.device.HubAction(
-        method: "PUT",
-        path: "${path}?type=${type}&name=${name}&value=${value}",
-        headers: [
-            HOST: getHostAddress()
-        ]
+        method: method,
+        path: "${settings.path}",
+        body: json.toString(),
+        headers: headers
     )
+/*
+    try {
+      httpPost("${path}", "type=${type}&name=${name}&value=${value}") { resp ->
+      log.debug "response data: ${resp.data}"
+      log.debug "response contentType: ${resp.contentType}"
+    }
+    } catch (e) {
+        log.debug "something went wrong: $e"
+    }
+*/
     log.debug "${result}"
     sendHubCommand(result)
 }
