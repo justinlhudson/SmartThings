@@ -375,22 +375,24 @@ private startAlarmSequence(evt)
     state.alarmActive = true
     log.debug "starting alarm sequence"
 
-    sendNotificationEvent("Potential intruder detected - " + evt.name)
+    def message = "${settings.textMessage} @ ${evt.displayName}"
 
     if (location.contactBookEnabled) {
-        sendNotificationToContacts(textMessage ?: "Potential intruder detected", recipients)
+        sendNotificationToContacts(message ?: "Potential intruder detected", recipients)
     }
     else {
         if (settings.phone1) {
-            sendSms(settings.phone1, textMessage ?: "Potential intruder detected")
+            sendSms(settings.phone1, message ?: "Potential intruder detected")
         }
         if (settings.phone2) {
-            sendSms(settings.phone2, textMessage ?: "Potential intruder detected")
+            sendSms(settings.phone2, message ?: "Potential intruder detected")
         }
         if (settings.phone3) {
-            sendSms(settings.phone3, textMessage ?: "Potential intruder detected")
+            sendSms(settings.phone3, message ?: "Potential intruder detected")
         }
     }
+
+    sendNotificationEvent(message)
 
     // Note: at end of sequence (for reset)!
     if (newMode) {
