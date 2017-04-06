@@ -259,8 +259,6 @@ def motion(evt)
       return
     }
    */
-    sendPush evt.name
-
     log.debug "intruder motion, $evt.name: $evt.value"
 
     intruderMotion(evt)
@@ -279,7 +277,7 @@ def intruderMotion(evt)
       log.trace "checking if residents have been quiet"
       if (residentsHaveBeenQuiet()) {
         log.trace "calling startAlarmSequence"
-        startAlarmSequence()
+        startAlarmSequence(evt)
       }
       /*
       else {
@@ -312,7 +310,7 @@ def contact(evt)
     // TODO - check for residents being up?
     if (!state.residentsAreUp) {
       if (residentsHaveBeenQuiet()) {
-        startAlarmSequence()
+        startAlarmSequence(evt)
       }
       /*
       else {
@@ -368,7 +366,7 @@ def checkForReArm()
 }
 */
 
-private startAlarmSequence()
+private startAlarmSequence(evt)
 {
   if (state.alarmActive) {
     log.debug "alarm already active"
@@ -377,7 +375,7 @@ private startAlarmSequence()
     state.alarmActive = true
     log.debug "starting alarm sequence"
 
-    sendNotificationEvent("Potential intruder detected!")
+    sendNotificationEvent("Potential intruder detected - " + evt.name)
 
     if (location.contactBookEnabled) {
         sendNotificationToContacts(textMessage ?: "Potential intruder detected", recipients)
