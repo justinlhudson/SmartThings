@@ -41,8 +41,6 @@ def modeHandler(evt)
       state.prevMode = state.currentMode
       state.currentMode = evt.value
 
-      sendPush evt.value
-
       log.debug "Prev. Mode: ${state.prevMode}" 
       log.debug "Current Mode: ${state.currentMode}"
     }

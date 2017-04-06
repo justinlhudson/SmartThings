@@ -259,7 +259,10 @@ def motion(evt)
       return
     }
    */
+    sendPush evt.name
+
     log.debug "intruder motion, $evt.name: $evt.value"
+
     intruderMotion(evt)
 /*
     log.debug "state = false"
