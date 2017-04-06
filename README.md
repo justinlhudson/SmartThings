@@ -25,6 +25,10 @@ Example code for retrieving token for access into endpoint.
 
 Resets alarm if active in reset period with delay period before disarm.
 
+## ModeSwitchRoutine
+
+When mode changes, will also activate routine. Since routines already activate mode, this allows the other direction.
+
 ## ModeSwitchActivator
 
 When selected mode change occurs (e.g. home, away, night) then switch(es) are activated and in any other mode are deactivated.
