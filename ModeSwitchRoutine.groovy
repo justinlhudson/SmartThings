@@ -47,15 +47,30 @@ def updated() {
   initialize()
 }
 
+def routineHandler(evt) {
+  log.debug "${evt.displayName}"
+  state.currentRoutine = evt.displayName
+}
+
 def modeHandler(evt)
 {
-  if(evt.value == settings.mode) {
-    location.helloHome.execute(settings.action)
+  if (state.currentRoutine != settings.action)
+  {
+    log.debug "${state.currentRoutine} != ${settings.action}"
+    if (state.currentMode != evt.value) {
+      log.debug "${state.currentMode} != ${evt.value}"
+      if(evt.value == settings.mode) {
+        location.helloHome?.execute(settings.action)
+      }
+    }
   }
+  log.debug "${evt.value}"
+  state.currentMode = evt.value
 }
 
 private def initialize() {
   subscribe(location, "mode", modeHandler)
+  subscribe(location, "routineExecuted", routineHandler)
 }
 
 /*
