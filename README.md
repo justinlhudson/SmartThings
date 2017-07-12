@@ -7,11 +7,11 @@ SmartThings Development
 
 Note: This could have been setup to alert when message changed rather then type of alert, but sometimes same alert they seem to change often and not want alarm all night long (I like to sleep).</s>
 
-## DeviceEndpoints
+## <s>DeviceEndpoints</s>
 
-Web Service application endpoint for switches as starting point.
+<s>Web Service application endpoint for switches as starting point.
 
-Note: Was being developed for Amazon Echo but now is supported.
+Note: Was being developed for Amazon Echo but now is supported.</s>
 
 ### <s>smartThings.js</s>
 
