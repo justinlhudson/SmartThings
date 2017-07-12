@@ -21,9 +21,9 @@ Note: Was being developed for Amazon Echo but now is supported.</s>
 
 <s>Example code for retrieving token for access into endpoint.</s>
 
-## AlarmResetter
+## <s>AlarmResetter</s>
 
-Resets alarm if active in reset period with delay period before disarm.
+<s>Resets alarm if active in reset period with delay period before disarm.</s>
 
 ## ModeSwitchRoutine
 
