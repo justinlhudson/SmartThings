@@ -39,7 +39,9 @@ Monitors switches for on/active to determine if mode does not get changed during
 
 ## Device Logger
 
-Does "put" request to send device name and value to local server for logging [WebApplication-Server](https://github.com/justinlhudson/WebApplication-Server)
+Does "put" request to send device name and value to local server for logging [WebApplication-Server](https://github.com/justinlhudson/Web-Application)
+
+`http://<hostname>:<port>/api/st/log`
 
 ## ModeWatcher
 
