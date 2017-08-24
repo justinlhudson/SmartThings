@@ -9,6 +9,7 @@ definition (
     iconUrl: "https://graph.api.smartthings.com/api/devices/icons/st.Electronics.electronics13-icn?displaySize",
     iconX2Url: "https://graph.api.smartthings.com/api/devices/icons/st.Electronics.electronics13-icn?displaySize=2x")
 
+// Device List: http://docs.smartthings.com/en/latest/capabilities-reference.html
 preferences {
     section("Log devices...") {
         input "powers", "capability.powerMeter", title: "Power", required: false, multiple: true
@@ -21,6 +22,7 @@ preferences {
         input "thermostats", "capability.thermostat", title: "Thermostat", required:false, multiple: true
         input "humidities", "capability.relativeHumidityMeasurement", title: "Humidity", required: false, multiple: true
         input "illuminances", "capability.illuminanceMeasurement", title: "Illuminance", required:false, multiple: true
+        input "waters", "capability.waterSensor", title: "Water", required:false, multiple: true
     }
 
     section ("API (GET request query") {
@@ -51,6 +53,7 @@ def initialize() {
     subscribe(energies, "energy", handleEnergyEvent)
     subscribe(motions, "motion", handleMotionEvent)
     subscribe(switches, "switch", handleSwitchEvent)
+    subscribe(waters, "switch", handleWaterEvent)
 }
 
 def handleIlluminanceEvent(evt) {
@@ -91,6 +94,10 @@ def handleMotionEvent(evt) {
 
 def handleSwitchEvent(evt) {
     logField("switch",evt) { it == "on" ? "1" : "0" }
+}
+
+def handleWaterEvent(evt) {
+    logField("water",evt) { it == "wet" ? "1" : "0" }
 }
 
 private logField(type, evt, Closure c) {
