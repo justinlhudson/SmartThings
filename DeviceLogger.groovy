@@ -45,6 +45,9 @@ def updated() {
 }
 
 def initialize() {
+    subscribe(location, "mode", handleMode)
+    subscribe(location, "routineExecuted", handleRoutine)
+    
     subscribe(temperatures, "temperature", handleTemperatureEvent)
     subscribe(thermostats, "thermostatOperatingState", handleThermostatEvent)
     subscribe(humidities, "humidity", handleHumidityEvent)
@@ -59,6 +62,15 @@ def initialize() {
     subscribe(valves, "contact", handleValveEvent)
     subscribe(detectors, "smoke", handleDetectorEvent)
     subscribe(detectors, "carbonMonoxide", handleDetectorEvent)
+}
+
+def handleRoutine(evt) {
+  logField("mode",evt) { it.displayName.toString() }
+}
+
+def handleMode(evt)
+{
+  logField("mode",evt) { it.toString() }
 }
 
 def handleIlluminanceEvent(evt) {
