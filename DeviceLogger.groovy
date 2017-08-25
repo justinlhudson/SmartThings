@@ -23,6 +23,8 @@ preferences {
         input "humidities", "capability.relativeHumidityMeasurement", title: "Humidity", required: false, multiple: true
         input "illuminances", "capability.illuminanceMeasurement", title: "Illuminance", required:false, multiple: true
         input "waters", "capability.waterSensor", title: "Water", required:false, multiple: true
+        input "valves", "capability.valve", title: "Valve", required:false, multiple: true
+        input "detectors", "capability.smokeDetector", title: "Detectors", required:false, multiple: true
     }
 
     section ("API (GET request query") {
@@ -53,7 +55,10 @@ def initialize() {
     subscribe(energies, "energy", handleEnergyEvent)
     subscribe(motions, "motion", handleMotionEvent)
     subscribe(switches, "switch", handleSwitchEvent)
-    subscribe(waters, "switch", handleWaterEvent)
+    subscribe(waters, "water", handleWaterEvent)
+    subscribe(valves, "contact", handleValveEvent)
+    subscribe(detectors, "smoke", handleDetectorEvent)
+    subscribe(detectors, "carbonMonoxide", handleDetectorEvent)
 }
 
 def handleIlluminanceEvent(evt) {
@@ -98,6 +103,14 @@ def handleSwitchEvent(evt) {
 
 def handleWaterEvent(evt) {
     logField("water",evt) { it == "wet" ? "1" : "0" }
+}
+
+def handleValveEvent(evt) {
+    logField("contact",evt) { it == "open" ? "1" : "0" }
+}
+
+def handleDetectorEvent(evt) {
+    logField("contact",evt) { it == "detected" ? "1" : "0" }
 }
 
 private logField(type, evt, Closure c) {
