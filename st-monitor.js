@@ -46,11 +46,11 @@ function notSeen(minutes) {
 
 // Todo:  add battery % checker!!!  not based on days, but last seen period
 
-var _hours=1440
+var _minutes=1440
 print("")
-print("*** NOT Seen ("+_hours+" hrs.) ***")
+print("*** NOT Seen ("+_minutes+" min.) ***")
 print("")
-notSeen(_hours).forEach(function(name){
+notSeen(_minutes).forEach(function(name){
   print(name)
 });
 
