@@ -36,6 +36,7 @@ preferences {
     input "residentMotions", "capability.motionSensor", title: "Motion Sensors", multiple: true, required: false
   }
   section("Alarm settings and actions") {
+    input "activators", "capability.switch", title: "Activate Switch(s)", multiple: true, required: false
     input "alarms", "capability.alarm", title: "Which Alarm(s)", multiple: true, required: false
     input "silent", "enum", options: ["Yes","No"], title: "Silent alarm only (Yes/No), i.e. strobe"
     //input "seconds", "number", title: "Delay in seconds before siren sounds"
@@ -259,9 +260,25 @@ def motion(evt)
       return
     }
    */
-    log.debug "intruder motion, $evt.name: $evt.value"
-
-    intruderMotion(evt)
+    
+    def active = false
+    // if enabled switches are defined and active active
+    if(settings.activators != null && settings.activators.length > 0) {
+      settings.activators.each {
+        if ( it != null && it.currentSwitch != "off") {
+          active = true
+          log.debug "alarm switch active, $it.name: $it.currentSwitch"
+        }
+      }
+    }
+    else {
+      activate = true
+    }
+  
+    if(active) {
+      log.debug "intruder motion, $evt.name: $evt.value"
+      intruderMotion(evt)
+    }
 /*
     log.debug "state = false"
     state.check = true
