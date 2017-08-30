@@ -118,11 +118,11 @@ def handleWaterEvent(evt) {
 }
 
 def handleValveEvent(evt) {
-    logField("contact",evt) { it == "open" ? "1" : "0" }
+    logField("valve",evt) { it == "open" ? "1" : "0" }
 }
 
 def handleDetectorEvent(evt) {
-    logField("contact",evt) { it == "detected" ? "1" : "0" }
+    logField("detector",evt) { it == "detected" ? "1" : "0" }
 }
 
 private logField(type, evt, Closure c) {
