@@ -260,25 +260,8 @@ def motion(evt)
       return
     }
    */
-    
-    def active = false
-    // if enabled switches are defined and active active
-    if(settings.activators != null && settings.activators.length > 0) {
-      settings.activators.each {
-        if ( it != null && it.currentSwitch != "off") {
-          active = true
-          log.debug "alarm switch active, $it.name: $it.currentSwitch"
-        }
-      }
-    }
-    else {
-      activate = true
-    }
-  
-    if(active) {
-      log.debug "intruder motion, $evt.name: $evt.value"
-      intruderMotion(evt)
-    }
+
+    intruderMotion(evt)
 /*
     log.debug "state = false"
     state.check = true
@@ -385,6 +368,26 @@ def checkForReArm()
 
 private startAlarmSequence(evt)
 {
+
+  def active = false
+  // if enabled switches are defined and active active
+  if(settings.activators) {
+    settings.activators.each {
+      if ( it != null && it.currentSwitch != "off") {
+        active = true
+        log.debug "alarm switch active, $it.name: $it.currentSwitch"
+      }
+    }
+  }
+  else {
+    active = true
+  }
+
+  if(!active) {
+    log.debug "alarm switch not active, ignoring alarm"
+    return
+  }
+
   if (state.alarmActive) {
     log.debug "alarm already active"
   }
@@ -443,7 +446,7 @@ private startAlarmSequence(evt)
     }
 
     if (lights) {
-      flashLights(Math.min((seconds/2) as Integer, 10))
+      runIn(1, flashLights(, [overwrite: true]))
       log.trace "lights flashing..."
     }
 
@@ -475,7 +478,8 @@ def continueFlashing()
 }
 */
 
-private flashLights(numFlashes) {
+private flashLights() {
+  def numFlashes = 10
   def onFor = 1000
   def offFor = 1000
 
