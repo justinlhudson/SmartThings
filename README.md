@@ -43,6 +43,8 @@ Does "put" request to send device name and value to local server for logging [We
 
 `http://<hostname>:<port>/api/st/log`
 
+'st-monitor.js': query DB for information stored...
+
 ## ModeWatcher
 
 Watches for zone 1 entry into zone 2 and if no entry into zone 2 will revert back to location mode before zone 1 was entered.
