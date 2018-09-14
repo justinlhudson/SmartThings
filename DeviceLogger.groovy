@@ -1,5 +1,7 @@
 import groovy.json.JsonBuilder
 
+// Device List: http://docs.smartthings.com/en/latest/capabilities-reference.html
+
 definition (
     name: "Device Logger",
     namespace: "Operations",
@@ -9,9 +11,9 @@ definition (
     iconUrl: "https://graph.api.smartthings.com/api/devices/icons/st.Electronics.electronics13-icn?displaySize",
     iconX2Url: "https://graph.api.smartthings.com/api/devices/icons/st.Electronics.electronics13-icn?displaySize=2x")
 
-// Device List: http://docs.smartthings.com/en/latest/capabilities-reference.html
 preferences {
     section("Log devices...") {
+        input "presences", "capability.presenceSensor", title: "Presence", required: false, multiple: true
         input "powers", "capability.powerMeter", title: "Power", required: false, multiple: true
         input "energies", "capability.energyMeter", title: "Energy", required: false, multiple: true
         input "contacts", "capability.contactSensor", title: "Contact", required: false, multiple: true
@@ -45,119 +47,129 @@ def updated() {
 }
 
 def initialize() {
-    subscribe(location, "mode", handleMode)
-    subscribe(location, "routineExecuted", handleRoutine)
+    subscribe(location, "mode", modeHandler)
+    subscribe(location, "routineExecuted", routineHandler)
     
-    subscribe(temperatures, "temperature", handleTemperatureEvent)
-    subscribe(thermostats, "thermostatOperatingState", handleThermostatEvent)
-    subscribe(humidities, "humidity", handleHumidityEvent)
-    subscribe(illuminances, "illuminance", handleIlluminanceEvent)
-    subscribe(batteries, "battery", handleBatteryEvent)
-    subscribe(contacts, "contact", handleContactEvent)
-    subscribe(powers, "power", handlePowerEvent)
-    subscribe(energies, "energy", handleEnergyEvent)
-    subscribe(motions, "motion", handleMotionEvent)
-    subscribe(switches, "switch", handleSwitchEvent)
-    subscribe(waters, "water", handleWaterEvent)
-    subscribe(valves, "contact", handleValveEvent)
-    subscribe(detectors, "smoke", handleDetectorEvent)
-    subscribe(detectors, "carbonMonoxide", handleDetectorEvent)
+    subscribe(presences, "presence", presenceHandler)
+    subscribe(temperatures, "temperature", temperatureHandler)
+    subscribe(thermostats, "thermostatOperatingState", thermostatHandler)
+    subscribe(humidities, "humidity", humidityHandler)
+    subscribe(illuminances, "illuminance", illuminanceHandler)
+    subscribe(batteries, "battery", batteryHandler)
+    subscribe(contacts, "contact", contactHandler)
+    subscribe(powers, "power", powerHandler)
+    subscribe(energies, "energy", energyHandler)
+    subscribe(motions, "motion", motionHandler)
+    subscribe(switches, "switch", switchHandler)
+    subscribe(waters, "water", waterHandler)
+    subscribe(valves, "contact", valveHandler)
+    subscribe(detectors, "smoke", detectorHandler)
+    subscribe(detectors, "carbonMonoxide", detectorHandler)
 }
 
-def handleRoutine(evt) {
-  logField("mode",evt) { it.displayName.toString() }
+def routineHandler(evt) {
+  logField("routine",evt) { 1 }//it.toString() }
 }
 
-def handleMode(evt)
+def modeHandler(evt)
 {
-  logField("mode",evt) { it.toString() }
+  logField("mode",evt) { 1 } //it.toString() }
 }
 
-def handleIlluminanceEvent(evt) {
-    logField("illuminance",evt) { it.toString() }
+def presenceHandler(evt)
+{
+  logField("presence",evt) { (it == "present" ? 1 : 0).toString() }
 }
 
-def handleThermostatEvent(evt) {
-    logField("thermostat",evt) { ((it == "heating" ? 1 : 0) || (it == "cooling" ? 1 : 0)).toString() }
+def illuminanceHandler(evt) {
+  logField("illuminance",evt) { it.toString() }
 }
 
-def handlePowerEvent(evt) {
-    logField("power",evt) { it.toString() }
+def thermostatHandler(evt) {
+  logField("thermostat",evt) { ((it == "heating" ? 1 : 0) || (it == "cooling" ? 1 : 0)).toString() }
 }
 
-def handleEnergyEvent(evt) {
-    logField("energy",evt) { it.toString() }
+def powerHandler(evt) {
+  logField("power",evt) { it.toString() }
 }
 
-def handleBatteryEvent(evt) {
-    logField("battery",evt) { it.toString() }
+def energyHandler(evt) {
+  logField("energy",evt) { it.toString() }
 }
 
-def handleHumidityEvent(evt) {
-    logField("humidity",evt) { it.toString() }
+def batteryHandler(evt) {
+  logField("battery",evt) { it.toString() }
 }
 
-def handleTemperatureEvent(evt) {
-    logField("temperature",evt) { it.toString() }
+def humidityHandler(evt) {
+  logField("humidity",evt) { it.toString() }
 }
 
-def handleContactEvent(evt) {
-    logField("contact",evt) { it == "open" ? "1" : "0" }
+def temperatureHandler(evt) {
+  logField("temperature",evt) { it.toString() }
 }
 
-def handleMotionEvent(evt) {
-    logField("motion",evt) { it == "active" ? "1" : "0" }
+def contactHandler(evt) {
+  logField("contact",evt) { it == "open" ? "1" : "0" }
 }
 
-def handleSwitchEvent(evt) {
-    logField("switch",evt) { it == "on" ? "1" : "0" }
+def motionHandler(evt) {
+  logField("motion",evt) { it == "active" ? "1" : "0" }
 }
 
-def handleWaterEvent(evt) {
-    logField("water",evt) { it == "wet" ? "1" : "0" }
+def switchHandler(evt) {
+  logField("switch",evt) { it == "on" ? "1" : "0" }
 }
 
-def handleValveEvent(evt) {
-    logField("valve",evt) { it == "open" ? "1" : "0" }
+def waterHandler(evt) {
+  logField("water",evt) { it == "wet" ? "1" : "0" }
 }
 
-def handleDetectorEvent(evt) {
-    logField("detector",evt) { it == "detected" ? "1" : "0" }
+def valveHandler(evt) {
+  logField("valve",evt) { it == "open" ? "1" : "0" }
+}
+
+def detectorHandler(evt) {
+  logField("detector",evt) { it == "detected" ? "1" : "0" }
 }
 
 private logField(type, evt, Closure c) {
-    def name = evt.displayName.trim()
-    def value = c(evt.value)
+  def name = evt.name.trim()
+  try {
+    name = evt.displayName.trim()
+  } catch (ex) { }
 
-    log.debug "Logging: ${name}, ${type}, ${value}"
+  // Note: value is of type int32, for web service used
+  def value = c(evt.value)
 
-    def method = "POST"
+  log.debug "Logging: ${type}, ${name}, ${value}"
 
-    def headers = [:] 
-    headers.put("HOST", getHostAddress())
-    headers.put("Content-Type", "application/json")
+  def method = "POST"
+
+  def headers = [:] 
+  headers.put("HOST", getHostAddress())
+  headers.put("Content-Type", "application/json")
 
     def json = new JsonBuilder()
     json.call("type":"${type}","name":"${name}","value":"${value}")
 
-    def result = new physicalgraph.device.HubAction(
-        method: method,
-        path: "${settings.path}",
-        body: json.toString(),
-        headers: headers
-    )
+  def result = new physicalgraph.device.HubAction(
+      method: method,
+      path: "${settings.path}",
+      body: json.toString(),
+      headers: headers
+  )
 /*
-    try {
-      httpPost("${path}", "type=${type}&name=${name}&value=${value}") { resp ->
-      log.debug "response data: ${resp.data}"
-      log.debug "response contentType: ${resp.contentType}"
-    }
-    } catch (e) {
-        log.debug "something went wrong: $e"
-    }
+  try {
+    httpPost("${path}", "type=${type}&name=${name}&value=${value}") { resp ->
+    log.debug "response data: ${resp.data}"
+    log.debug "response contentType: ${resp.contentType}"
+  } catch (ex) {
+      log.debug "something went wrong: $ex"
+  }
 */
-    log.debug "${result}"
-    sendHubCommand(result)
+  log.debug "${result}"
+  sendHubCommand(result)
 }
 
 private getHostAddress() {
