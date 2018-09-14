@@ -7,14 +7,17 @@ var _keys = Object.keys(db.logs.findOne())
 
 print("Keys:")
 print(_keys)
+print("")
 
 var _names = db.logs.distinct("name")
 var _types = db.logs.distinct("type")
 
 print("Names:")
 print(_names)
+print("")
 print("Types:")
 print(_types)
+print("")
 
 function notSeen(minutes) {
   var seen = []
@@ -37,21 +40,29 @@ function notSeen(minutes) {
   var result = []
   _names.forEach(function(name) {
     if(!seenNames.includes(name)) {
-      result.push(name)
+      item = db.logs.find({"name": name}).sort({"created":-1}).limit(1).toArray()[0]
+      result.push(item)
     }
   });
 
   return result
 }
 
-// Todo:  add battery % checker!!!  not based on days, but last seen period
-
 var _minutes=1440
 print("")
-print("*** NOT Seen ("+_minutes+" min.) ***")
+print("*** Device NOT Seen ("+_minutes+" min.) ***")
 print("")
-notSeen(_minutes).forEach(function(name){
-  print(name)
+notSeen(_minutes).forEach(function(item){
+  print(item.name+" : "+item.value)
+});
+
+print("")
+print("*** Motion NOT Seen ("+_minutes+" min.) ***")
+print("")
+notSeen(_minutes).forEach(function(item){
+  if(item.type == "motion") {
+    print(item.name+" : "+item.value)
+  }
 });
 
 function batteryReplace(percent) {
@@ -69,7 +80,7 @@ function batteryReplace(percent) {
   var result = []
   seen.forEach(function(item) {
     if(parseInt(item.value) <= percent) {
-      result.push(item.name)
+      result.push(item)
     }
   });
 
@@ -80,8 +91,8 @@ var _percent=40
 print("")
 print("*** Battery Low (<="+_percent+"%) ***")
 print("")
-batteryReplace(_percent).forEach(function(name){
-  print(name)
+batteryReplace(_percent).forEach(function(item){
+  print(item.name + " : " + item.value)
 });
 
 print("");
